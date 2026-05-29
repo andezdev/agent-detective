@@ -90,7 +90,7 @@ importers:
         specifier: 'catalog:'
         version: 12.1.3
       zod:
-        specifier: 4.4.3
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@changesets/changelog-git':
