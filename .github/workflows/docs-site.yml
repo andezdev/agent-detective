@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
         with: { version: 10.33.0 }
       - uses: actions/setup-node@v6
         with: { node-version: '24', cache: pnpm, cache-dependency-path: pnpm-lock.yaml }
@@ -36,7 +36,7 @@ jobs:
         run: pnpm --filter agent-detective-landing build
       - name: Merge landing into Pages root
         run: node scripts/merge-landing-into-docs-dist.mjs
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with: { path: apps/docs/dist }
 
   deploy:
@@ -50,4 +50,4 @@ jobs:
     steps:
       - id: deploy
         name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

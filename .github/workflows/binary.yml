@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
 
       # Pin a concrete Node 25.x: major-only "25" can incorrectly resolve to the
       # runner tool-cache (20/22/24) instead of downloading Node 25 — see actions/setup-node README.
@@ -79,7 +79,7 @@ jobs:
 
       # Cosign v3: keyless sign-blob writes a single Sigstore bundle per artifact (--bundle).
       - name: Install cosign
-        uses: sigstore/cosign-installer@v4.1.0
+        uses: sigstore/cosign-installer@v4.1.2
         with:
           cosign-release: 'v3.0.6'
 
