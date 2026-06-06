@@ -4,9 +4,8 @@ import {
   DOC_ONLY_PATHS,
   isDocOnlyPath,
   parseCommitType,
-  isBreakingChange,
   verifyCommitReleaseScope,
-} from '../../scripts/verify-commit-release-scope.mjs';
+} from '../../scripts/verify-commit-release-scope.js';
 
 describe('verify-commit-release-scope', () => {
   it('detects doc-only paths', () => {
