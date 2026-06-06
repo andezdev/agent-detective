@@ -1,11 +1,11 @@
 {
-  ".": "0.1.0",
-  "packages/types": "0.1.0",
-  "packages/sdk": "0.1.0",
-  "packages/observability": "0.1.0",
-  "packages/process-utils": "0.1.0",
-  "packages/local-repos-plugin": "0.1.0",
-  "packages/jira-adapter": "0.1.0",
-  "packages/linear-adapter": "0.1.0",
-  "packages/pr-pipeline": "0.1.0"
+  ".": "1.0.0",
+  "packages/types": "1.0.0",
+  "packages/sdk": "1.0.0",
+  "packages/observability": "1.0.0",
+  "packages/process-utils": "1.0.0",
+  "packages/local-repos-plugin": "1.0.0",
+  "packages/jira-adapter": "1.0.0",
+  "packages/linear-adapter": "1.0.0",
+  "packages/pr-pipeline": "1.0.0"
 }
