@@ -60,9 +60,15 @@ Usage:
                                               Validate config/tools/plugins and exit
   ${APP_NAME} validate-config [--config-root <dir>] [--json] [--verbose]
                                               Validate config only and exit
-  ${APP_NAME} init [--config-root <dir>] [--repo-path <dir>] [--repo-name <name>]
-                   [--agent <id>] [--force] [--json]
-                                              Scaffold config/local.json for a mock first run
+  ${APP_NAME} init [--config-root <dir>] [--yes|-y] [--json] [--force]
+                   [--repo-path <dir>] [--repo-name <name>] [--repo <name:path>]
+                   [--port <n>] [--agent <id>] [--default-model <model>]
+                   [--tracker jira|linear|mock-only] [--jira-mock|--no-jira-mock]
+                   [--jira-base-url <url>] [--linear-mock|--no-linear-mock]
+                   [--ack-message <text>] [--fail-on-missing-repos]
+                   [--pr-pipeline|--no-pr-pipeline] [--pr-dry-run|--no-pr-dry-run]
+                   [--pretty-logs]
+                                              Scaffold config/local.json (guided wizard in a TTY)
   ${APP_NAME} --version                         Print version and exit
   ${APP_NAME} --help                            Print this help and exit
 

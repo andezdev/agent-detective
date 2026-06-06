@@ -1,18 +1,26 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { basename, isAbsolute, resolve } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { basename, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { isKnownAgent, normalizeAgent } from '../agents/index.js';
 import { loadConfig } from '../server.js';
+import { shouldRunWizard } from './init-interactive.js';
+import {
+  DEFAULT_ACK_MESSAGE,
+  DEFAULT_REQUEST_LOGGER_EXCLUDE_PATHS,
+  defaultInitOptions,
+  defaultModelForAgent,
+  resolveRepoPath,
+  type InitOptions,
+  type InitParsedFlags,
+  type InitRepo,
+  type IssueTracker,
+} from './init-types.js';
+import { printNextSteps } from './init-ui.js';
+import { runInitWizard } from './init-wizard.js';
 
-export type InitOptions = {
-  repoPath: string;
-  repoName: string;
-  agent: string;
-  force: boolean;
-};
-
-export type InitParsedFlags = InitOptions & {
-  json: boolean;
-};
+export type { InitOptions, InitParsedFlags, InitRepo, IssueTracker } from './init-types.js';
+export { shouldRunWizard } from './init-interactive.js';
+export { runInitWizard } from './init-wizard.js';
 
 type RunInitOptions = {
   installRoot?: string;
@@ -27,6 +35,32 @@ function resolveConfigDirFromInstallRoot(installRoot: string | undefined): strin
   return resolve(base, 'config');
 }
 
+/** Template shipped in the npm tarball at `config/default.json`. */
+export function resolvePackagedDefaultConfigPath(): string | undefined {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const candidates = [
+    resolve(here, '..', 'config', 'default.json'),
+    resolve(here, '..', '..', 'config', 'default.json'),
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) return candidate;
+  }
+  return undefined;
+}
+
+/** Copy packaged `default.json` into the operator config dir when missing. */
+export function seedDefaultConfigIfMissing(configDir: string): boolean {
+  const targetPath = resolve(configDir, 'default.json');
+  if (existsSync(targetPath)) return false;
+
+  const packagedPath = resolvePackagedDefaultConfigPath();
+  if (!packagedPath) return false;
+
+  mkdirSync(configDir, { recursive: true });
+  copyFileSync(packagedPath, targetPath);
+  return true;
+}
+
 function takeFlagValue(args: string[], flag: string): string | undefined {
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -36,132 +70,270 @@ function takeFlagValue(args: string[], flag: string): string | undefined {
   return undefined;
 }
 
-export function parseInitFlags(argv: string[]): InitParsedFlags {
+function takeAllFlagValues(args: string[], flag: string): string[] {
+  const values: string[] = [];
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === flag && args[i + 1]) {
+      values.push(args[i + 1]!);
+      i++;
+    } else if (a?.startsWith(`${flag}=`)) {
+      values.push(a.slice(flag.length + 1));
+    }
+  }
+  return values;
+}
+
+function parseRepoSpec(spec: string, cwd: string): InitRepo {
+  const colon = spec.indexOf(':');
+  if (colon === -1) {
+    const path = resolveRepoPath(spec, cwd);
+    return { name: basename(path) || 'symfony', path };
+  }
+  const name = spec.slice(0, colon).trim();
+  const pathRaw = spec.slice(colon + 1).trim();
+  return { name: name || basename(pathRaw) || 'symfony', path: resolveRepoPath(pathRaw, cwd) };
+}
+
+function parseReposFromFlags(args: string[], cwd: string): InitRepo[] | undefined {
+  const repoSpecs = takeAllFlagValues(args, '--repo');
+  if (repoSpecs.length > 0) {
+    return repoSpecs.map((spec) => parseRepoSpec(spec, cwd));
+  }
+
+  const repoPath = takeFlagValue(args, '--repo-path');
+  const repoName = takeFlagValue(args, '--repo-name');
+  if (repoPath || repoName) {
+    const path = resolveRepoPath(repoPath ?? cwd, cwd);
+    return [{ name: repoName ?? (basename(path) || 'symfony'), path }];
+  }
+
+  return undefined;
+}
+
+function parseIssueTracker(args: string[]): IssueTracker | undefined {
+  const raw = takeFlagValue(args, '--tracker');
+  if (!raw) return undefined;
+  if (raw === 'jira' || raw === 'linear' || raw === 'mock-only') return raw;
+  return 'jira';
+}
+
+function parsePort(args: string[]): number | undefined {
+  const raw = takeFlagValue(args, '--port');
+  if (!raw) return undefined;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function parseBooleanFlag(args: string[], flag: string): boolean | undefined {
+  if (args.includes(flag)) return true;
+  const negated = `--no-${flag.slice(2)}`;
+  if (args.includes(negated)) return false;
+  return undefined;
+}
+
+export function parseInitFlags(argv: string[], cwd = process.cwd()): InitParsedFlags {
   const args = argv.slice(2).filter((a) => a !== 'init');
-  const repoPath = takeFlagValue(args, '--repo-path') ?? process.cwd();
-  const repoName =
-    takeFlagValue(args, '--repo-name') ?? (basename(repoPath) || 'symfony');
-  const agentRaw = takeFlagValue(args, '--agent') ?? 'opencode';
+  const defaults = defaultInitOptions(cwd);
+
+  const repos = parseReposFromFlags(args, cwd) ?? defaults.repos;
+  const agentRaw = takeFlagValue(args, '--agent') ?? defaults.agent;
   const agent = isKnownAgent(agentRaw) ? normalizeAgent(agentRaw) : normalizeAgent('opencode');
+  const issueTracker = parseIssueTracker(args) ?? defaults.issueTracker;
+
+  const jiraMockFlag = parseBooleanFlag(args, '--jira-mock');
+  const linearMockFlag = parseBooleanFlag(args, '--linear-mock');
+  const prPipelineFlag = parseBooleanFlag(args, '--pr-pipeline');
 
   return {
-    repoPath,
-    repoName,
+    port: parsePort(args) ?? defaults.port,
     agent,
+    defaultModel: takeFlagValue(args, '--default-model'),
+    repos,
+    issueTracker,
+    jiraMockMode:
+      issueTracker === 'mock-only' ? true : jiraMockFlag ?? defaults.jiraMockMode,
+    jiraBaseUrl: takeFlagValue(args, '--jira-base-url'),
+    linearMockMode: linearMockFlag ?? defaults.linearMockMode,
+    acknowledgmentMessage: takeFlagValue(args, '--ack-message') ?? defaults.acknowledgmentMessage,
+    failOnMissingRepos: args.includes('--fail-on-missing-repos'),
+    prPipelineEnabled: prPipelineFlag ?? defaults.prPipelineEnabled,
+    prDryRun: parseBooleanFlag(args, '--pr-dry-run') ?? defaults.prDryRun,
+    prettyLogs: args.includes('--pretty-logs'),
+    advancedConfigured:
+      args.includes('--fail-on-missing-repos') ||
+      args.includes('--pretty-logs') ||
+      prPipelineFlag !== undefined ||
+      parseBooleanFlag(args, '--pr-dry-run') !== undefined ||
+      (parseReposFromFlags(args, cwd)?.length ?? 0) > 1,
     force: args.includes('--force'),
     json: args.includes('--json'),
+    yes: args.includes('--yes') || args.includes('-y'),
   };
 }
 
-export function buildInitLocalConfig(options: InitOptions): Record<string, unknown> {
-  const repoPath = isAbsolute(options.repoPath)
-    ? options.repoPath
-    : resolve(process.cwd(), options.repoPath);
+export function buildInitLocalConfig(options: InitOptions, cwd = process.cwd()): Record<string, unknown> {
+  const resolvedRepos = options.repos.map((repo) => ({
+    name: repo.name,
+    path: resolveRepoPath(repo.path, cwd),
+    description:
+      repo.description ??
+      `Repo matched when issue has label ${repo.name}`,
+  }));
 
-  return {
-    port: 3001,
+  const jiraEnabled = options.issueTracker === 'jira' || options.issueTracker === 'mock-only';
+  const linearEnabled = options.issueTracker === 'linear';
+
+  const jiraOptions: Record<string, unknown> = {
+    enabled: jiraEnabled,
+    mockMode:
+      options.issueTracker === 'mock-only' ? true : jiraEnabled ? options.jiraMockMode : false,
+    webhookBehavior: {
+      defaults: {
+        action: 'ignore',
+        acknowledgmentMessage: options.acknowledgmentMessage ?? DEFAULT_ACK_MESSAGE,
+      },
+      events: {
+        'jira:issue_created': { action: 'analyze' },
+        'jira:comment_created': { action: 'analyze' },
+      },
+    },
+  };
+  if (!jiraOptions.mockMode && options.jiraBaseUrl) {
+    jiraOptions.baseUrl = options.jiraBaseUrl;
+  }
+
+  const linearOptions: Record<string, unknown> = {
+    enabled: linearEnabled,
+    mockMode: linearEnabled ? options.linearMockMode : true,
+  };
+
+  const prPipelineOptions: Record<string, unknown> = {
+    prBranchPrefix: 'hotfix/',
+    prTitleTemplate: '[{{key}}] {{summary}}',
+  };
+  if (options.prPipelineEnabled) {
+    prPipelineOptions.enabled = true;
+    prPipelineOptions.prDryRun = options.prDryRun;
+  } else {
+    prPipelineOptions.enabled = false;
+  }
+
+  const config: Record<string, unknown> = {
+    port: options.port,
     agent: options.agent,
     agents: {
-      [options.agent]: { defaultModel: defaultModelForAgent(options.agent) },
+      [options.agent]: {
+        defaultModel: options.defaultModel ?? defaultModelForAgent(options.agent),
+      },
     },
     plugins: [
       {
         package: '@agent-detective/local-repos-plugin',
         options: {
-          repos: [
-            {
-              name: options.repoName,
-              path: repoPath,
-              description: `Repo matched when Jira issue has label ${options.repoName}`,
-            },
-          ],
-          validation: { failOnMissing: false },
+          repos: resolvedRepos,
+          validation: { failOnMissing: options.failOnMissingRepos },
         },
       },
       {
         package: '@agent-detective/jira-adapter',
-        options: {
-          enabled: true,
-          mockMode: true,
-          webhookBehavior: {
-            defaults: {
-              action: 'ignore',
-              acknowledgmentMessage: 'Thanks — we are reviewing this issue.',
-            },
-            events: {
-              'jira:issue_created': { action: 'analyze' },
-              'jira:comment_created': { action: 'analyze' },
-            },
-          },
-        },
+        options: jiraOptions,
       },
       {
         package: '@agent-detective/linear-adapter',
-        options: { enabled: false, mockMode: true },
+        options: linearOptions,
       },
       {
         package: '@agent-detective/pr-pipeline',
-        options: {
-          prBranchPrefix: 'hotfix/',
-          prTitleTemplate: '[{{key}}] {{summary}}',
-          prDryRun: true,
-        },
+        options: prPipelineOptions,
       },
     ],
   };
-}
 
-function defaultModelForAgent(agentId: string): string {
-  switch (agentId) {
-    case 'claude':
-      return 'sonnet';
-    case 'cursor':
-      return 'composer-2.5-fast';
-    default:
-      return 'opencode/deepseek-v4-flash-free';
+  if (options.prettyLogs || options.advancedConfigured) {
+    const observability: Record<string, unknown> = {};
+    if (options.prettyLogs) {
+      observability.logging = {
+        pretty: { enabled: true, format: 'console' },
+      };
+    }
+    if (options.advancedConfigured) {
+      observability.requestLogger = {
+        excludePaths: DEFAULT_REQUEST_LOGGER_EXCLUDE_PATHS,
+      };
+    }
+    config.observability = observability;
   }
+
+  return config;
 }
 
-function printNextSteps(installRoot: string, repoName: string): void {
-  const rootFlag = installRoot !== process.cwd() ? ` --config-root ${installRoot}` : '';
-  // eslint-disable-next-line no-console
-  console.log(`
-Created config/local.json (mockMode: true).
+async function resolveInitOptions(
+  installRoot: string | undefined,
+  argv: string[],
+): Promise<{ options: InitOptions; installRootUsed: string }> {
+  const cwd = installRoot ?? process.cwd();
 
-Next steps:
-  1. agent-detective doctor${rootFlag}
-  2. agent-detective${rootFlag}
+  if (shouldRunWizard(argv)) {
+    const wizard = await runInitWizard({ installRoot: cwd });
+    const flags = parseInitFlags(argv, cwd);
+    return {
+      options: { ...wizard.options, force: flags.force },
+      installRootUsed: wizard.installRoot,
+    };
+  }
 
-Mock webhook smoke (server running in another terminal):
-  From a git clone: pnpm run jira:webhook-smoke
-  Bundled fixture labels: probando, symfony — your repo name is "${repoName}".
-  For a match with the fixture, re-run init with --repo-name symfony or add label "${repoName}" in Jira.
+  const flags = parseInitFlags(argv, cwd);
+  return {
+    options: flags,
+    installRootUsed: installRoot ?? process.cwd(),
+  };
+}
 
-Logs should show [MOCK] Added comment when mock analysis completes.
-`);
+async function confirmOverwriteInteractive(localPath: string): Promise<boolean> {
+  const clack = await import('@clack/prompts');
+  const answer = await clack.confirm({
+    message: `${localPath} already exists. Overwrite it?`,
+    initialValue: false,
+  });
+  if (clack.isCancel(answer)) {
+    clack.cancel('Setup cancelled.');
+    return false;
+  }
+  return answer as boolean;
 }
 
 export async function runInit({ installRoot, argv }: RunInitOptions): Promise<void> {
-  const flags = parseInitFlags(argv);
-  const configDir = resolveConfigDirFromInstallRoot(installRoot);
+  const flags = parseInitFlags(argv, installRoot ?? process.cwd());
+  const resolved = await resolveInitOptions(installRoot, argv);
+  const options = resolved.options;
+  const installRootUsed = resolved.installRootUsed;
+  const configDir = resolveConfigDirFromInstallRoot(installRootUsed);
   const localPath = resolve(configDir, 'local.json');
-  const installRootUsed = installRoot ?? process.cwd();
 
-  if (existsSync(localPath) && !flags.force) {
-    const message = `Refusing to overwrite ${localPath}. Use --force to replace it.`;
-    if (flags.json) {
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify({ ok: false, error: message, localPath }, null, 2));
+  if (existsSync(localPath) && !options.force) {
+    if (shouldRunWizard(argv)) {
+      const overwrite = await confirmOverwriteInteractive(localPath);
+      if (!overwrite) {
+        process.exitCode = 1;
+        return;
+      }
     } else {
-      // eslint-disable-next-line no-console
-      console.error(message);
+      const message = `Refusing to overwrite ${localPath}. Use --force to replace it.`;
+      if (flags.json) {
+        // eslint-disable-next-line no-console
+        console.log(JSON.stringify({ ok: false, error: message, localPath }, null, 2));
+      } else {
+        console.error(message);
+      }
+      process.exitCode = 1;
+      return;
     }
-    process.exitCode = 1;
-    return;
   }
 
   mkdirSync(configDir, { recursive: true });
-  const config = buildInitLocalConfig(flags);
+  seedDefaultConfigIfMissing(configDir);
+  const config = buildInitLocalConfig(options, installRootUsed);
   writeFileSync(localPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
 
   let validated = true;
@@ -182,9 +354,10 @@ export async function runInit({ installRoot, argv }: RunInitOptions): Promise<vo
           localPath,
           configDir,
           installRootUsed,
-          repoName: flags.repoName,
-          repoPath: flags.repoPath,
-          agent: flags.agent,
+          repos: options.repos,
+          agent: options.agent,
+          port: options.port,
+          issueTracker: options.issueTracker,
           validationError,
         },
         null,
@@ -195,10 +368,9 @@ export async function runInit({ installRoot, argv }: RunInitOptions): Promise<vo
     // eslint-disable-next-line no-console
     console.log(`Wrote ${localPath}`);
     if (!validated) {
-      // eslint-disable-next-line no-console
       console.error(`Warning: generated config failed validation: ${validationError}`);
     } else {
-      printNextSteps(installRootUsed, flags.repoName);
+      printNextSteps(installRootUsed, options);
     }
   }
 

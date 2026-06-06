@@ -10,6 +10,7 @@
   },
   "files": [
     "dist",
+    "config/default.json",
     "scripts/publish-lifecycle.mjs"
   ],
   "publishConfig": {
@@ -47,7 +48,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "jira.js": "catalog:",
     "@agent-detective/jira-adapter": "workspace:*",
     "@agent-detective/linear-adapter": "workspace:*",
     "@agent-detective/local-repos-plugin": "workspace:*",
@@ -56,10 +56,12 @@
     "@agent-detective/process-utils": "workspace:*",
     "@agent-detective/sdk": "workspace:*",
     "@agent-detective/types": "workspace:*",
+    "@clack/prompts": "^1.5.1",
     "@fastify/swagger": "catalog:",
     "@scalar/fastify-api-reference": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "jira.js": "catalog:",
     "openapi-types": "catalog:",
     "zod": "catalog:"
   },
@@ -67,9 +69,9 @@
     "@commitlint/cli": "^20.4.0",
     "@commitlint/config-conventional": "^20.4.0",
     "@eslint/js": "^10.0.1",
-    "husky": "^9.1.7",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "husky": "^9.1.7",
     "tmp": "^0.2.7",
     "tsup": "catalog:",
     "tsx": "catalog:",

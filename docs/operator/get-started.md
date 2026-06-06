@@ -31,17 +31,36 @@ npm i -g agent-detective
 
 mkdir -p ~/agent-detective && cd ~/agent-detective
 
-agent-detective init \
+agent-detective init
+```
+
+In a terminal (TTY), bare **`agent-detective init`** opens a **guided wizard** in six sections (setup, agent, repository, server, integration, advanced). You finish on a **review screen** where you can edit any section before writing **`config/local.json`**. Jira mock mode is the default for the smoke test.
+
+For scripts and CI, use non-interactive mode:
+
+```bash
+agent-detective init --yes \
   --repo-path /absolute/path/to/your/git/checkout \
   --repo-name symfony
 ```
 
-`init` writes **`config/local.json`** with **mock Jira mode**, one repo, and bundled plugins. Use `--repo-name` equal to a label you will attach in Jira later; the bundled smoke fixture uses **`symfony`** and **`probando`**.
+Use `--repo-name` equal to a label you will attach in Jira later; the bundled smoke fixture uses **`symfony`** and **`probando`**.
+
+| Flag | Purpose |
+|------|---------|
+| `--yes` / `-y` | Skip wizard; use flags or defaults |
+| `--json` | Machine-readable result |
+| `--repo-path`, `--repo-name` | Single repo (legacy) |
+| `--repo name:path` | Repeatable repo spec |
+| `--port`, `--agent`, `--default-model` | Server and agent runtime |
+| `--tracker jira\|linear\|mock-only` | Issue tracker branch |
+| `--jira-mock` / `--no-jira-mock`, `--jira-base-url` | Jira mode (secrets via env) |
+| `--force` | Overwrite existing `local.json` |
 
 Prefer not to install globally?
 
 ```bash
-npx agent-detective init --repo-path /path/to/repo --repo-name symfony
+npx agent-detective init --yes --repo-path /path/to/repo --repo-name symfony
 ```
 
 ## 2. Validate and run
