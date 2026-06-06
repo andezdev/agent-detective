@@ -1,1 +1,2 @@
 npx --no -- commitlint --edit "$1"
+pnpm exec tsx scripts/verify-commit-release-scope.ts "$1"

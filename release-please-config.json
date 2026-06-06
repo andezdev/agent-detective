@@ -28,7 +28,19 @@
     ".": {
       "release-type": "node",
       "component": "agent-detective",
-      "extra-files": ["src/version.ts"]
+      "extra-files": ["src/version.ts"],
+      "exclude-paths": [
+        "docs",
+        "apps/docs",
+        "apps/landing",
+        ".github/workflows/docs-site.yml",
+        "scripts/sync-starlight-content.mjs",
+        "scripts/merge-landing-into-docs-dist.mjs",
+        "README.md",
+        "CODE_OF_CONDUCT.md",
+        "SECURITY.md",
+        "AGENTS.md"
+      ]
     },
     "packages/types": {
       "release-type": "node",

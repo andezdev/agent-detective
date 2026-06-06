@@ -21,6 +21,8 @@ On every push to **`main`**, [.github/workflows/release-please.yml](../../.githu
 ## Maintainer steps
 
 1. Land changes on `main` using **Conventional Commits** (`feat:`, `fix:`, `chore:`, …).
+   - **Docs and landing only** (`docs/**`, `apps/docs/**`, `apps/landing/**`, root `README.md`): use **`docs:`** or **`chore:`** — not `fix:` / `feat:` (those trigger npm). The commit hook and release-please `exclude-paths` enforce this.
+   - **Runtime / npm** (`src/`, `packages/`, `test/`, etc.): use `feat:` / `fix:` as usual.
 2. Review the **Release PR** created by release-please.
 3. Merge the Release PR when CI is green and the changelog looks correct.
 4. Confirm the **release-please** workflow published to npm and created the GitHub Release.
