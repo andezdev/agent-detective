@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.1](https://github.com/andezdev/agent-detective/compare/agent-detective-v1.0.0...agent-detective-v1.0.1) (2026-06-06)
+
+
+### Bug Fixes
+
+* **cli:** skip dev postinstall hooks in published npm package ([6f27107](https://github.com/andezdev/agent-detective/commit/6f27107142cdb1d661d84a7d39e2dcacd6474ee9))
+* **sdk:** add README to the published npm package ([9117a85](https://github.com/andezdev/agent-detective/commit/9117a856a74e9bb9824c11547e490bc7e3943e8c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/jira-adapter bumped to 1.0.1
+    * @agent-detective/linear-adapter bumped to 1.0.1
+    * @agent-detective/local-repos-plugin bumped to 1.0.1
+    * @agent-detective/observability bumped to 1.0.1
+    * @agent-detective/pr-pipeline bumped to 1.0.1
+    * @agent-detective/process-utils bumped to 1.0.1
+    * @agent-detective/sdk bumped to 1.0.1
+    * @agent-detective/types bumped to 1.0.1
+
 ## [1.0.0](https://github.com/andezdev/agent-detective/compare/agent-detective-v0.1.0...agent-detective-v1.0.0) (2026-06-06)
 
 

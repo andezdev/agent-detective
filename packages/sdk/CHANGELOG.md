@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.1](https://github.com/andezdev/agent-detective/compare/sdk-v1.0.0...sdk-v1.0.1) (2026-06-06)
+
+
+### Bug Fixes
+
+* **sdk:** add README to the published npm package ([9117a85](https://github.com/andezdev/agent-detective/commit/9117a856a74e9bb9824c11547e490bc7e3943e8c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/types bumped to 1.0.1
+
 ## [1.0.0](https://github.com/andezdev/agent-detective/compare/sdk-v0.1.0...sdk-v1.0.0) (2026-06-06)
 
 
