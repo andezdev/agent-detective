@@ -9,13 +9,14 @@
     "agent-detective": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "scripts/publish-lifecycle.mjs"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "postinstall": "node scripts/sync-cursor-from-agents.mjs",
+    "postinstall": "node scripts/publish-lifecycle.mjs",
     "agents:sync-cursor": "node scripts/sync-cursor-from-agents.mjs",
     "dev": "tsx watch src/index.ts",
     "build": "turbo run build",
@@ -35,7 +36,7 @@
     "docs:site:dev": "pnpm --filter agent-detective-docs dev",
     "landing:dev": "pnpm --filter agent-detective-landing dev",
     "clean": "turbo run clean",
-    "prepare": "husky",
+    "prepare": "node scripts/publish-lifecycle.mjs",
     "start": "node dist/index.js",
     "jira:webhook-smoke": "node scripts/jira-webhook-smoke.mjs"
   },
