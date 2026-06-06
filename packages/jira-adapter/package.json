@@ -28,6 +28,9 @@
     "adapter"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@agent-detective/sdk": "workspace:*",
     "jira.js": "catalog:",
@@ -41,10 +44,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/toniop99/agent-detective.git"
+    "url": "git+https://github.com/andezdev/agent-detective.git"
   },
   "author": "Antonio Hernandez",
   "bugs": {
-    "url": "https://github.com/toniop99/agent-detective/issues"
+    "url": "https://github.com/andezdev/agent-detective/issues"
   }
 }

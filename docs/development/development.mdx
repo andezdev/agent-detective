@@ -95,7 +95,7 @@ End-to-end Jira webhook testing (tunnel, labels, smoke script): [e2e/jira-manual
 - **`pnpm run build:app`** runs **tsup** on the root entrypoint and writes **`dist/index.js`** for `pnpm start` (run **`pnpm run build`** first so workspace packages are built).
 - **`pnpm run typecheck`** runs `turbo run typecheck` for packages **and** `tsc --noEmit` at the repo root for `src/` + `test/`.
 - **`pnpm test`** runs **`turbo run test`** (package tests, e.g. `@agent-detective/jira-adapter`, with `^build` deps) then **root** tests with **tsx** on `test/**/*.test.ts`.
-- **`pnpm run publish`** runs **Changesets** (`changeset publish`), not Turborepo.
+- **npm publish** is automated by **release-please** on merge of the Release PR (see [publishing.md](../plugins/publishing.md)); do not publish manually from a dirty tree unless debugging.
 - **Turborepo cache**: stored under **`.turbo/`** at the repo root. To discard local task cache: `rm -rf .turbo` (or `pnpm exec turbo daemon clean` if you use the daemon). **`pnpm run clean`** runs each package's `clean` script (typically `rm -rf dist`) via `turbo run clean`.
 
 ### Workspace and tooling (detail)
@@ -112,7 +112,7 @@ End-to-end Jira webhook testing (tunnel, labels, smoke script): [e2e/jira-manual
 | `pnpm run typecheck` | `turbo run typecheck` + root `tsc --noEmit` |
 | `pnpm run test` | Package tests + root `test/**/*.test.ts` |
 | `pnpm run clean` | Each package's `clean` (e.g. `rm -rf dist`) |
-| `pnpm run publish` (root) | Changesets: `changeset publish` (publishable **workspace** packages only) |
+| Release PR merge | **release-please** tags and publishes `agent-detective` + `@agent-detective/*` (see [publishing.md](../plugins/publishing.md)) |
 
 **Build order (conceptual):** `types` and `process-utils` have no workspace deps; `core` and `observability` depend on types; plugins depend on types/core/process-utils as declared in their `package.json`. Turbo resolves the graph via `^build`.
 

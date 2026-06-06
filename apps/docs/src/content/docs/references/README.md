@@ -15,4 +15,4 @@ Short pages (progressive disclosure): stable facts and commands without rereadin
 | Turborepo / tasks | [turbo.md](/docs/references/turbo/) |
 | ESM imports (`.js` in `.ts`) | [esm-imports.md](/docs/references/esm-imports/) |
 
-Deep dives: [Development guide](https://github.com/toniop99/agent-detective/blob/main/docs/development/development.md) · [Agent harness](https://github.com/toniop99/agent-detective/blob/main/docs/development/agent-harness.md).
+Deep dives: [Development guide](https://github.com/andezdev/agent-detective/blob/main/docs/development/development.md) · [Agent harness](https://github.com/andezdev/agent-detective/blob/main/docs/development/agent-harness.md).

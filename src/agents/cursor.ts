@@ -3,7 +3,7 @@ import type { Agent, AgentOutput } from '../core/types.js';
 
 const CURSOR_AGENT_CMD = 'agent';
 const OUTPUT_FORMAT = 'json';
-const DEFAULT_MODEL = 'gpt-5.2';
+const DEFAULT_MODEL = 'composer-2.5-fast';
 
 function safeJsonParse(value: string): Record<string, unknown> | null {
   try {

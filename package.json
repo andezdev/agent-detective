@@ -1,17 +1,25 @@
 {
   "name": "agent-detective",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "packageManager": "pnpm@10.33.0",
   "description": "AI-powered code analysis agent that responds to events from Jira, Telegram, Slack and more",
   "type": "module",
+  "bin": {
+    "agent-detective": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "postinstall": "node scripts/sync-cursor-from-agents.mjs",
     "agents:sync-cursor": "node scripts/sync-cursor-from-agents.mjs",
     "dev": "tsx watch src/index.ts",
     "build": "turbo run build",
     "build:app": "tsup --config tsup.config.ts",
-    "build:sea:app": "tsup --config tsup.sea.config.ts",
     "build:types": "pnpm --filter @agent-detective/types build",
     "typecheck": "turbo run typecheck && tsc --noEmit",
     "lint": "turbo run lint && node scripts/check-package-root-imports.mjs && node scripts/check-plugin-cross-imports.mjs && node scripts/check-docs-internal-links.mjs",
@@ -27,9 +35,7 @@
     "docs:site:dev": "pnpm --filter agent-detective-docs dev",
     "landing:dev": "pnpm --filter agent-detective-landing dev",
     "clean": "turbo run clean",
-    "changeset": "changeset",
-    "version": "changeset version",
-    "publish": "changeset publish",
+    "prepare": "husky",
     "start": "node dist/index.js",
     "jira:webhook-smoke": "node scripts/jira-webhook-smoke.mjs"
   },
@@ -41,7 +47,11 @@
   "license": "MIT",
   "dependencies": {
     "jira.js": "catalog:",
+    "@agent-detective/jira-adapter": "workspace:*",
+    "@agent-detective/linear-adapter": "workspace:*",
+    "@agent-detective/local-repos-plugin": "workspace:*",
     "@agent-detective/observability": "workspace:*",
+    "@agent-detective/pr-pipeline": "workspace:*",
     "@agent-detective/process-utils": "workspace:*",
     "@agent-detective/sdk": "workspace:*",
     "@agent-detective/types": "workspace:*",
@@ -53,9 +63,10 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@changesets/changelog-git": "^0.2.1",
-    "@changesets/cli": "^2.31.0",
+    "@commitlint/cli": "^20.4.0",
+    "@commitlint/config-conventional": "^20.4.0",
     "@eslint/js": "^10.0.1",
+    "husky": "^9.1.7",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "tmp": "^0.2.7",
@@ -75,10 +86,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/toniop99/agent-detective.git"
+    "url": "git+https://github.com/andezdev/agent-detective.git"
   },
   "author": "Antonio Hernandez",
   "bugs": {
-    "url": "https://github.com/toniop99/agent-detective/issues"
+    "url": "https://github.com/andezdev/agent-detective/issues"
   }
 }

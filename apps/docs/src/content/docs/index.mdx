@@ -7,7 +7,7 @@ hero:
   tagline: AI-powered code analysis with plugins for Jira, Linear, and more. Self-hosted, open source, and extensible.
   actions:
     - text: Get started
-      link: /docs/operator/installation/
+      link: /docs/operator/get-started/
       icon: right-arrow
       variant: primary
     - text: Build a plugin
@@ -25,9 +25,14 @@ export const docsBase = import.meta.env.BASE_URL.endsWith('/')
 
 <CardGrid stagger>
 	<LinkCard
-		title="Run the server"
+		title="Get started (npm)"
+		href={docsBase + 'operator/get-started/'}
+		description="Five-minute install, init, and mock webhook smoke test."
+	/>
+	<LinkCard
+		title="Installation paths"
 		href={docsBase + 'operator/installation/'}
-		description="Install from source, native binary, or bare metal; configure, upgrade, and operate."
+		description="npm CLI, from source, or bare metal — pick how you run."
 	/>
 	<LinkCard
 		title="Configuration"

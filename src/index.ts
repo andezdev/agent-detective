@@ -9,19 +9,14 @@ import { execLocal, execLocalStreaming, terminateChildProcess } from './core/pro
 import { getAgentLabel, listAgents, normalizeAgent } from './agents/index.js';
 import { createObservability } from '@agent-detective/observability';
 import { applyLogLevelAliasForObservability } from './config/env-whitelist.js';
-import { dirname, isAbsolute, resolve } from 'node:path';
+import { isAbsolute, resolve } from 'node:path';
 import { APP_NAME, APP_VERSION } from './version.js';
 import { homedir } from 'node:os';
 
 type CliArgs = {
-  command: 'serve' | 'doctor' | 'validate-config' | 'help' | 'version';
+  command: 'serve' | 'doctor' | 'validate-config' | 'init' | 'help' | 'version';
   configRoot?: string;
 };
-
-function looksLikeNodeExecutable(execPath: string): boolean {
-  const base = execPath.split(/[\\/]/).pop() ?? execPath;
-  return base === 'node' || base === 'node.exe';
-}
 
 function resolveCliArgs(argv: string[]): CliArgs {
   const args = argv.slice(2);
@@ -35,9 +30,11 @@ function resolveCliArgs(argv: string[]): CliArgs {
   const command =
     args[0] === 'doctor'
       ? 'doctor'
-      : args[0] === 'validate-config' || args.includes('--validate-config')
-        ? 'validate-config'
-        : 'serve';
+      : args[0] === 'init'
+        ? 'init'
+        : args[0] === 'validate-config' || args.includes('--validate-config')
+          ? 'validate-config'
+          : 'serve';
 
   let configRoot: string | undefined;
   for (let i = 0; i < args.length; i++) {
@@ -63,6 +60,9 @@ Usage:
                                               Validate config/tools/plugins and exit
   ${APP_NAME} validate-config [--config-root <dir>] [--json] [--verbose]
                                               Validate config only and exit
+  ${APP_NAME} init [--config-root <dir>] [--repo-path <dir>] [--repo-name <name>]
+                   [--agent <id>] [--force] [--json]
+                                              Scaffold config/local.json for a mock first run
   ${APP_NAME} --version                         Print version and exit
   ${APP_NAME} --help                            Print this help and exit
 
@@ -81,13 +81,6 @@ function resolveInstallRoot(cliConfigRoot: string | undefined): string | undefin
 
   if (cliConfigRoot) return resolve(expandHome(cliConfigRoot));
   if (process.env.AGENT_DETECTIVE_CONFIG_ROOT) return resolve(expandHome(process.env.AGENT_DETECTIVE_CONFIG_ROOT));
-
-  // SEA-friendly fallback: use the directory containing the executable, but
-  // avoid changing behavior when running under `node dist/index.js`.
-  if (!looksLikeNodeExecutable(process.execPath)) {
-    return dirname(process.execPath);
-  }
-
   return undefined;
 }
 
@@ -265,6 +258,12 @@ async function main(): Promise<void> {
   if (cli.command === 'validate-config') {
     const mod = await import('./cli/doctor.js');
     await mod.runValidateConfig({ installRoot, argv: process.argv });
+    return;
+  }
+
+  if (cli.command === 'init') {
+    const mod = await import('./cli/init.js');
+    await mod.runInit({ installRoot, argv: process.argv });
     return;
   }
 

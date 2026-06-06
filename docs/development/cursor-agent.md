@@ -32,7 +32,7 @@ In `config/default.json` (or `local.json`):
   "agent": "cursor",
   "agents": {
     "cursor": {
-      "defaultModel": "gpt-5.2"
+      "defaultModel": "composer-2.5-fast"
     }
   }
 }

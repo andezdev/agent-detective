@@ -51,12 +51,15 @@
   "peerDependencies": {
     "fastify": "^5.8.5"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/toniop99/agent-detective.git"
+    "url": "git+https://github.com/andezdev/agent-detective.git"
   },
   "author": "Antonio Hernandez",
   "bugs": {
-    "url": "https://github.com/toniop99/agent-detective/issues"
+    "url": "https://github.com/andezdev/agent-detective/issues"
   }
 }

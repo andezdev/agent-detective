@@ -3,7 +3,7 @@
   "port": 3001,
   "agent": "opencode",
   "agents": {
-    "opencode": { "defaultModel": "opencode/gpt-5-nano" },
+    "opencode": { "defaultModel": "opencode/deepseek-v4-flash-free" },
     "runner": {
       "timeoutMs": 120000,
       "maxBufferBytes": 10485760,

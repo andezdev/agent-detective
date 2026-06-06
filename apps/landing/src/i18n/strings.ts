@@ -139,13 +139,13 @@ export const strings: Record<Lang, LandingStrings> = {
         'Your agents listen where work happens—<strong class="text-paper-50 font-medium">Jira, Linear, Telegram, Slack</strong>—and answer with <span class="text-evidence-300/90">grounded, repo-level insight</span>, not generic filler. One core; plugins and config define the rest.',
       readDocs: 'Read the docs',
       viewGithub: 'View on GitHub',
-      pullImage: 'Quick start (release binary)',
+      pullImage: 'Quick start (npm)',
       quickStartNoteHtml:
-        'Download <span class="text-paper-200/70 font-mono text-[0.65rem]">agent-detective-*</span> for your platform from <a class="text-evidence-300/80 hover:underline" href="https://github.com/toniop99/agent-detective/releases/latest">GitHub Releases</a> into <span class="font-mono text-paper-200/70 text-[0.65rem]">/opt/agent-detective/</span> alongside <span class="font-mono text-paper-200/70 text-[0.65rem]">config/</span> — see <a class="text-evidence-300/80 hover:underline" href="/docs/operator/binary/">native binary</a>.',
+        'Requires Node.js 24+. Install globally, scaffold config, then run — see <a class="text-evidence-300/80 hover:underline" href="/docs/operator/installation/">installation</a>.',
       quickStartDisplay:
-        'chmod +x /opt/agent-detective/agent-detective\n/opt/agent-detective/agent-detective doctor --config-root /opt/agent-detective',
+        'npm i -g agent-detective\nagent-detective init\nagent-detective doctor',
       quickStartCopy:
-        'chmod +x /opt/agent-detective/agent-detective && /opt/agent-detective/agent-detective doctor --config-root /opt/agent-detective',
+        'npm i -g agent-detective && agent-detective init && agent-detective doctor',
       copy: 'Copy',
       keyboardHint:
         'Press <kbd class="text-paper-200/60 border-paper-200/20 rounded border px-1 py-0.5">1</kbd>–<kbd class="text-paper-200/60 border-paper-200/20 rounded border px-1 py-0.5">5</kbd> to jump sections (desktop)',
@@ -178,7 +178,7 @@ export const strings: Record<Lang, LandingStrings> = {
         },
         {
           title: 'Operator-ready',
-          body: 'Fastify, health, metrics, structured logs, JSON and env. Prefer a signed release binary on the host; build from source when you extend the core.',
+          body: 'Fastify, health, metrics, structured logs, JSON and env. Install via npm on the host; build from source when you extend the core.',
         },
       ],
     },
@@ -249,13 +249,13 @@ export const strings: Record<Lang, LandingStrings> = {
         'Tus agentes escuchan donde ocurre el trabajo—<strong class="text-paper-50 font-medium">Jira, Linear, Telegram, Slack</strong>—y responden con <span class="text-evidence-300/90">contexto real del repositorio</span>, no relleno genérico. Un núcleo; plugins y configuración definen el resto.',
       readDocs: 'Leer la documentación',
       viewGithub: 'Ver en GitHub',
-      pullImage: 'Inicio rápido (binario de release)',
+      pullImage: 'Inicio rápido (npm)',
       quickStartNoteHtml:
-        'Descarga <span class="text-paper-200/70 font-mono text-[0.65rem]">agent-detective-*</span> para tu plataforma desde <a class="text-evidence-300/80 hover:underline" href="https://github.com/toniop99/agent-detective/releases/latest">GitHub Releases</a> en <span class="font-mono text-paper-200/70 text-[0.65rem]">/opt/agent-detective/</span> junto a <span class="font-mono text-paper-200/70 text-[0.65rem]">config/</span> — ver <a class="text-evidence-300/80 hover:underline" href="/docs/operator/binary/">binario nativo</a>.',
+        'Requiere Node.js 24+. Instala globalmente, genera la config y arranca — ver <a class="text-evidence-300/80 hover:underline" href="/docs/operator/installation/">instalación</a>.',
       quickStartDisplay:
-        'chmod +x /opt/agent-detective/agent-detective\n/opt/agent-detective/agent-detective doctor --config-root /opt/agent-detective',
+        'npm i -g agent-detective\nagent-detective init\nagent-detective doctor',
       quickStartCopy:
-        'chmod +x /opt/agent-detective/agent-detective && /opt/agent-detective/agent-detective doctor --config-root /opt/agent-detective',
+        'npm i -g agent-detective && agent-detective init && agent-detective doctor',
       copy: 'Copiar',
       keyboardHint:
         'Pulsa <kbd class="text-paper-200/60 border-paper-200/20 rounded border px-1 py-0.5">1</kbd>–<kbd class="text-paper-200/60 border-paper-200/20 rounded border px-1 py-0.5">5</kbd> para saltar de sección (escritorio)',
@@ -288,7 +288,7 @@ export const strings: Record<Lang, LandingStrings> = {
         },
         {
           title: 'Listo para operaciones',
-          body: 'Fastify, salud, métricas, logs estructurados, JSON y entorno. En el host, prioriza un binario de release firmado; compila desde el código si amplías el núcleo.',
+          body: 'Fastify, salud, métricas, logs estructurados, JSON y entorno. Instala vía npm en el host; compila desde el código si amplías el núcleo.',
         },
       ],
     },

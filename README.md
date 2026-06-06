@@ -1,8 +1,8 @@
 # Agent Detective
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-[![CI](https://github.com/toniop99/agent-detective/actions/workflows/ci.yml/badge.svg)](https://github.com/toniop99/agent-detective/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/toniop99/agent-detective)](https://github.com/toniop99/agent-detective/releases)
+[![CI](https://github.com/andezdev/agent-detective/actions/workflows/ci.yml/badge.svg)](https://github.com/andezdev/agent-detective/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/release/andezdev/agent-detective)](https://github.com/andezdev/agent-detective/releases)
 
 AI-powered code analysis agent that responds to events from Jira, Telegram, Slack and more.
 
@@ -14,20 +14,32 @@ When a new incident is created in Jira, this agent analyzes the relevant reposit
 
 Core agent logic is **source-agnostic** — plugins normalize events from different sources (Jira, Telegram, Slack) into a common format.
 
-## Quick Start
+## Run it (npm)
+
+Install on a host where your agent CLI (OpenCode, Cursor, Claude) is already on `PATH` and authenticated:
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Run in development
-pnpm dev
-
-# Build workspace packages (Turbo) + bundle the server (tsup)
-pnpm build && pnpm run build:app
+npm i -g agent-detective
+mkdir -p ~/agent-detective && cd ~/agent-detective
+agent-detective init --repo-path /absolute/path/to/your/git/checkout --repo-name symfony
+agent-detective doctor --config-root .
+agent-detective --config-root .
 ```
 
-For day-to-day development you usually only need `pnpm dev`. CI runs `pnpm build` (packages) and `pnpm run build:app` (root `dist/`). See [Development Guide](docs/development/development.md#monorepo-layout-pnpm--turborepo).
+Five-minute walkthrough with a **mock Jira webhook** (no Jira account): [Get started](docs/operator/get-started.md). Full Jira + tunnel: [Golden path](docs/operator/golden-path.md). Production VM: [Deployment](docs/operator/deployment.md).
+
+## Develop it (pnpm)
+
+Clone the monorepo when you change core code or plugins:
+
+```bash
+git clone https://github.com/andezdev/agent-detective.git
+cd agent-detective
+pnpm install
+pnpm dev
+```
+
+CI runs `pnpm build` (packages) and `pnpm run build:app` (root `dist/`). See [Development Guide](docs/development/development.md#monorepo-layout-pnpm--turborepo).
 
 ## Packages
 
@@ -56,17 +68,13 @@ Configure via `config/default.json` (and optional `config/local.json`):
 }
 ```
 
-## Run in production
-
-Use a **native binary** from GitHub Releases, **build from source** (`pnpm start`), or follow the **bare-metal** guide (systemd + nginx). See [docs/operator/installation.mdx](docs/operator/installation.mdx). Install the agent CLI you configure (for example **OpenCode** per [OpenCode’s install guide](https://opencode.ai/docs)) on the host so `PATH` matches `config` (`agent` / `opencode` / etc.).
-
-**First-time path:** [Golden path (≈15 min)](docs/operator/golden-path.md) · [Threat model (operators)](docs/operator/threat-model.md)
+**Operator docs:** [Get started](docs/operator/get-started.md) · [Installation paths](docs/operator/installation.mdx) · [Upgrading](docs/operator/upgrading.md) · [Threat model](docs/operator/threat-model.md)
 
 ## Support matrix
 
 | Dimension | Supported / tested in CI (typical) | Notes |
 |-----------|--------------------------------------|--------|
-| **Runtime** | Node.js **24+** (from source); **native binary** (Linux x64 in releases) | See [package.json](package.json) `engines` / `packageManager`. |
+| **Runtime** | Node.js **24+**; **npm CLI** `agent-detective` | See [package.json](package.json) `engines` / `packageManager`. |
 | **Host OS** | **Linux** for production guides (systemd + nginx) | macOS/Windows OK for dev; WSL acceptable for local smoke. |
 | **HTTP server** | **Fastify** on configurable `port` (default **3001**) | `/api/health`, `/api/metrics`, Scalar `/docs`. |
 | **Agent CLIs** | **OpenCode** documented; **Claude** / **Cursor** agent ids registered in-repo | Match `config.agent` to an installed CLI; see [cursor-agent.md](docs/development/cursor-agent.md) for Cursor. |
@@ -78,7 +86,8 @@ Use a **native binary** from GitHub Releases, **build from source** (`pnpm start
 
 - **Documentation site (Starlight):** `pnpm run docs:site` from the root builds the static site in [`apps/docs/`](apps/docs/README.md) (source markdown is [`docs/`](docs/README.md); a [sync script](scripts/sync-starlight-content.mjs) runs on build). **Published:** [https://agent-detective.chapascript.dev/docs/](https://agent-detective.chapascript.dev/docs/) (GitHub Pages + [custom domain in repo settings](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site), DNS in Cloudflare). **GitHub Actions** is the Pages source. CI: [.github/workflows/docs-site.yml](.github/workflows/docs-site.yml).
 
-- [Installation](docs/operator/installation.mdx) — native binary, from source, or bare metal
+- [Get started](docs/operator/get-started.md) — five-minute npm quickstart with mock webhook
+- [Installation](docs/operator/installation.mdx) — npm CLI, from source, or bare metal
 - [Configuration (overview)](docs/config/configuration-hub.md) — [full reference](docs/config/configuration.md)
 - [Upgrading](docs/operator/upgrading.md) — releases and upgrade runbook
 - [Architecture](docs/architecture/architecture.md)

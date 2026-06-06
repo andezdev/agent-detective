@@ -545,7 +545,7 @@ export async function runPrWorkflow(input: PrWorkflowInput, deps: RunPrWorkflowD
       ...(analyticsBlock ? [``, `---`, ``, analyticsBlock] : []),
       ``,
       `---`,
-      `*🤖 Generated with [agent-detective](https://github.com/toniop99/agent-detective)*`,
+      `*🤖 Generated with [agent-detective](https://github.com/andezdev/agent-detective)*`,
     ].join('\n');
     if (!vcs) {
       throw new Error('pr-pipeline: internal: vcs missing after validation');

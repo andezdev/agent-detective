@@ -3,7 +3,7 @@ import type { Agent, AgentOutput } from '../core/types.js';
 
 const OPENCODE_CMD = 'opencode';
 const OPENCODE_OUTPUT_FORMAT = 'json';
-const DEFAULT_MODEL = 'opencode/gpt-5-nano';
+const DEFAULT_MODEL = 'opencode/deepseek-v4-flash-free';
 
 /**
  * opencode's permission system (see https://opencode.ai/docs) consumes a JSON

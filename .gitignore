@@ -4,19 +4,16 @@
 .turbo/
 *.tsbuildinfo
 
-# Changesets (keep README)
-.changeset/
-!.changeset/README.md
-
 # Dependencies
 node_modules/
 .pnpm-store/
 
-# Build outputs
+# Build outputs (root app, packages, Astro apps)
 dist/
 dist-sea/
-packages/types/dist/
-packages/jira-adapter/dist/
+packages/*/dist/
+apps/*/.astro/
+apps/*/dist/
 
 # Build artifacts
 *.js.map
