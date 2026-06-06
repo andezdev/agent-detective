@@ -13,7 +13,7 @@ const root = join(__dirname, '..');
 const sourceRoot = join(root, 'docs');
 const targetDir = join(root, 'apps', 'docs', 'src', 'content', 'docs');
 const BASE = '/docs';
-const GITHUB = 'https://github.com/toniop99/agent-detective/blob/main';
+const GITHUB = 'https://github.com/andezdev/agent-detective/blob/main';
 
 /** Basenames to skip when walking `docs/` (e.g. future templates). */
 const EXCLUDE_NAMES = new Set();

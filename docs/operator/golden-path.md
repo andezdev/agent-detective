@@ -2,7 +2,7 @@
 title: "Golden path — first analysis in about 15 minutes"
 description: Single entry-point checklist from install to a successful Jira-triggered run (or mock), with success criteria and troubleshooting.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 # Golden path — first analysis in about 15 minutes
@@ -22,7 +22,7 @@ If you need **real** Jira comments, add Jira API credentials and set **`mockMode
 
 | # | Requirement | Notes |
 |---|-------------|--------|
-| 1 | **Node.js 24+** and **pnpm 10+** | From source: see [development.md](../development/development.md). **Native binary:** no system Node — [binary.md](binary.md). |
+| 1 | **Node.js 24+** | npm CLI: `npm i -g agent-detective`. From source: **pnpm 10+** — [development.md](../development/development.md). |
 | 2 | **Git** on `PATH` | Required for repo context and agents. |
 | 3 | **Agent CLI** (e.g. OpenCode) on `PATH` | Match `config.agent` / `agent` key. [OpenCode install](https://opencode.ai/docs). |
 | 4 | **LLM credentials** for that agent | Env vars or agent config as per vendor. |
@@ -32,57 +32,53 @@ If you need **real** Jira comments, add Jira API credentials and set **`mockMode
 
 ## Steps (happy path)
 
-1. **Clone and install** (from source):
+1. **Install and scaffold**
 
    ```bash
-   git clone <repo-url> && cd code-detective
-   pnpm install
+   npm i -g agent-detective
+   mkdir -p ~/agent-detective && cd ~/agent-detective
+   agent-detective init --repo-path /absolute/path/to/your/git/checkout --repo-name my-app
    ```
 
-   Or install the **native binary** per [installation.mdx](installation.mdx).
+   Or from source: `git clone`, `pnpm install`, copy `config/local.example.json` → `config/local.json`.
 
-2. **Config**
-
-   - Copy [config/local.example.json](../../config/local.example.json) to **`config/local.json`** (gitignored).
-   - Enable **`@agent-detective/local-repos-plugin`** with at least one **`repos`** entry: absolute **`path`**, stable **`name`** (e.g. `my-app`).
-   - Enable **`@agent-detective/jira-adapter`** with **`mockMode: true`** for the first run.
-   - See [configuration-hub.md](../config/configuration-hub.md) for load order.
-
-3. **Validate**
+2. **Validate**
 
    ```bash
-   pnpm exec agent-detective doctor --config-root .
+   agent-detective doctor --config-root .
    ```
 
    Fix anything **error**-level before continuing.
 
-4. **Run the server**
+3. **Run the server**
 
    ```bash
-   pnpm dev
+   agent-detective --config-root .
    ```
 
-   Or `pnpm build && pnpm run build:app && pnpm start` for production-style.
+   Or `pnpm dev` / `pnpm start` when developing from a clone.
 
-5. **Tunnel**
+4. **Tunnel**
 
    - Expose **`http://127.0.0.1:<port>`** (default **3001**) to a public **HTTPS** URL.
 
-6. **Jira webhook**
+5. **Jira webhook**
 
    - URL path (fixed): **`https://<tunnel-host>/plugins/agent-detective-jira-adapter/webhook/jira`**
    - Subscribe at least to **Issue created** and **Comment created** (retry path).
    - If you use **Automation** without `webhookEvent` in the body, append the right **`?webhookEvent=jira:issue_created`** query — see [jira-manual-e2e.md](../e2e/jira-manual-e2e.md#which-webhook-source-are-you-using).
 
-7. **Create a Jira issue**
+6. **Create a Jira issue**
 
    - Add a **label** equal to your repo **`name`** (case-insensitive match).
    - Put enough description/stack trace for the agent to analyze (or a minimal placeholder for a smoke test).
 
-8. **Verify**
+7. **Verify**
 
    - Logs: webhook accepted → task queued → agent invocation → **`[MOCK]`** comment line if mock mode.
    - **`GET /api/health`** stays **ok** (or **degraded** only if you expect missing optional checks).
+
+   Local smoke without Jira: `pnpm run jira:webhook-smoke` (from a git clone, server running).
 
 ## Reference layout (single VM)
 

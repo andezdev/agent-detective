@@ -3,13 +3,13 @@
   "agent": "opencode",
   "agents": {
     "opencode": {
-      "defaultModel": "opencode/gpt-5-nano"
+      "defaultModel": "opencode/deepseek-v4-flash-free"
     },
     "claude": {
-      "defaultModel": "claude-sonnet-4-20250514"
+      "defaultModel": "sonnet"
     },
     "cursor": {
-      "defaultModel": "composer-2"
+      "defaultModel": "composer-2.5-fast"
     }
   },
   "pluginSystem": {

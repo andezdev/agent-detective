@@ -16,6 +16,9 @@ export default defineConfig({
   outDir: 'dist',
   clean: true,
   bundle: true,
+  banner: {
+    js: '#!/usr/bin/env node',
+  },
   external: [
     'jira.js',
     'fastify',
@@ -27,5 +30,9 @@ export default defineConfig({
     '@agent-detective/sdk',
     '@agent-detective/types',
     '@agent-detective/observability',
+    '@agent-detective/local-repos-plugin',
+    '@agent-detective/jira-adapter',
+    '@agent-detective/linear-adapter',
+    '@agent-detective/pr-pipeline',
   ],
 });

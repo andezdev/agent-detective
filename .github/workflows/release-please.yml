@@ -1,0 +1,56 @@
+name: release-please
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+
+      - uses: actions/checkout@v6
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.release.outputs.tag_name }}
+
+      - name: Setup pnpm
+        if: ${{ steps.release.outputs.release_created }}
+        uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify
+        if: ${{ steps.release.outputs.release_created }}
+        run: pnpm run lint && pnpm run typecheck && pnpm test
+
+      - name: Build
+        if: ${{ steps.release.outputs.release_created }}
+        run: pnpm run build && pnpm run build:app
+
+      - name: Publish to npm
+        if: ${{ steps.release.outputs.release_created }}
+        run: pnpm publish -r --access public --no-git-checks --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

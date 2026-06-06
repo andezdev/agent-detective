@@ -24,7 +24,7 @@ describe('agents', () => {
       });
       assert.ok(cmd.includes('opencode'));
       assert.ok(cmd.includes('--model'));
-      assert.ok(cmd.includes('opencode/gpt-5-nano'));
+      assert.ok(cmd.includes('opencode/deepseek-v4-flash-free'));
     });
 
     it('builds command with custom model', () => {
@@ -225,7 +225,7 @@ describe('agents', () => {
       assert.ok(cmd.includes('--output-format'));
       assert.ok(cmd.includes('json'));
       assert.ok(cmd.includes('--model'));
-      assert.ok(cmd.includes('gpt-5.2'));
+      assert.ok(cmd.includes('composer-2.5-fast'));
     });
 
     it('adds readOnly via --mode=ask', () => {

@@ -11,4 +11,4 @@ sidebar:
 - **From root:** `pnpm run build` → `turbo run build`; `pnpm test` runs Turbo tests **and** root `test/**/*.test.ts`.
 - **Cache:** Turbo caches task outputs; clean builds if you suspect stale artifacts: `pnpm run clean` (per package scripts).
 
-More: [Development guide](https://github.com/toniop99/agent-detective/blob/main/docs/development/development.md).
+More: [Development guide](https://github.com/andezdev/agent-detective/blob/main/docs/development/development.md).

@@ -14,8 +14,6 @@ import type { AgentRunner, EnqueueFn } from '@agent-detective/types';
 import { registerCoreApiRoutes } from './core/core-api-controller.js';
 import { loadConfig as loadAppConfig, type AppConfig } from './config/load.js';
 import { APP_NAME, APP_VERSION } from './version.js';
-import { basename } from 'node:path';
-
 /** Application config shape (files + env whitelist); alias for callers importing from `server`. */
 export type Config = AppConfig;
 
@@ -132,25 +130,8 @@ async function registerDocsRoute(
   config: Config,
   observability: Observability,
 ): Promise<void> {
-  const execBase = basename(process.execPath);
-  const isSeaBinary = execBase !== 'node' && execBase !== 'node.exe';
-
   const docsAuthRequired = config.docsAuthRequired ?? process.env.DOCS_AUTH_REQUIRED === 'true';
   const docsApiKey = config.docsApiKey ?? process.env.DOCS_API_KEY;
-
-  if (isSeaBinary) {
-    // Expose the OpenAPI JSON for tooling, even if the UI can't mount.
-    app.get('/docs/openapi.json', async () => app.swagger());
-
-    observability.logger.warn(
-      'Docs UI disabled: @scalar/fastify-api-reference requires runtime assets not available in SEA binaries. OpenAPI is available at /docs/openapi.json.'
-    );
-    app.get('/docs', async () => ({
-      message: 'Docs UI is not available in the native binary build.',
-      openapi: '/docs/openapi.json',
-    }));
-    return;
-  }
 
   await app.register(
     async (scope) => {

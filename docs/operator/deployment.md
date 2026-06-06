@@ -2,16 +2,16 @@
 title: "Deployment guide"
 description: Single-server bare-metal deployment with systemd, reverse proxy, and sizing.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 # Deployment guide
 
-Single-server **bare‑metal** deployment: **native binary** (recommended for a production VM), **from-source** install, systemd, reverse proxy, and sizing.
+Single-server **bare‑metal** deployment: **npm CLI** (recommended for a production VM), **from-source** install, systemd, reverse proxy, and sizing.
 
 **Reading order**
 
-- **Release binary on one host** — follow **[Native binary (end-to-end)](#native-binary-end-to-end)** below, then **Reverse proxy (nginx)**. Download, checksums, Cosign, `doctor`, and `validate-config`: [binary.md](binary.md).
+- **npm CLI on one host** — follow **[npm CLI (end-to-end)](#npm-cli-end-to-end)** below, then **Reverse proxy (nginx)**.
 - **Fork or monorepo build** — follow **[Installation (from source)](#installation-from-source)** and **[systemd with from-source tree](#systemd-with-from-source-tree)**.
 - **Config and env** — [configuration-hub.md](../config/configuration-hub.md) and [configuration.md](../config/configuration.md). **Upgrades** — [upgrading.md](upgrading.md). **Choosing a path** — [installation.mdx](installation.mdx).
 
@@ -21,13 +21,16 @@ Single-server **bare‑metal** deployment: **native binary** (recommended for a 
 All versions below are **minimum** requirements. Using older versions may work but is not tested or supported.
 :::
 
-### Native binary (runtime)
+### npm CLI (runtime)
 
-| Requirement | Notes |
-|-------------|--------|
-| OS | Ubuntu 22.04+ / Debian 12+ (or another Linux with **systemd** for the units below). macOS is supported for the binary itself; use launchd or another supervisor instead of systemd. |
-| System Node.js / pnpm | **Not required** for the application process. |
-| git | Required on the host if **local-repos** uses paths or operations that need git (see [installation.mdx](installation.mdx) host capabilities). |
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Node.js | 24+ | LTS recommended |
+| npm | 10+ | For `npm i -g agent-detective` |
+| git | Any recent | Required for **local-repos** |
+| OS | Ubuntu 22.04+ / Debian 12+ / macOS 13+ | Linux with **systemd** for the units below |
+
+Install your **agent CLI** (OpenCode, Claude, Cursor) on the same host and ensure it is on `PATH` for the service user.
 
 ### From source (build and run)
 
@@ -49,65 +52,35 @@ All versions below are **minimum** requirements. Using older versions may work b
 
 [configuration-hub.md](../config/configuration-hub.md) documents merge order and top-level keys. **Repository context** (e.g. `gitLogMaxCommits`) belongs under **local-repos-plugin** `options`, not as a root `repoContext` key.
 
-**Example** `config/default.json` skeleton for a bare-metal install (full plugin fields: [generated/plugin-options.md](../reference/generated/plugin-options.md)):
+Run **`agent-detective init`** to scaffold `config/local.json`, or edit manually. Full plugin fields: [generated/plugin-options.md](../reference/generated/plugin-options.md).
 
-```json title="config/default.json"
-{
-  "port": 3001,
-  "agent": "opencode",
-  "plugins": [
-    {
-      "package": "@agent-detective/local-repos-plugin",
-      "options": {
-        "repos": [],
-        "repoContext": { "gitLogMaxCommits": 50 },
-        "techStackDetection": { "enabled": true },
-        "summaryGeneration": {},
-        "validation": { "failOnMissing": false }
-      }
-    },
-    {
-      "package": "@agent-detective/jira-adapter",
-      "options": {
-        "enabled": true,
-        "mockMode": true,
-        "webhookBehavior": {}
-      }
-    }
-  ]
-}
-```
+Edit under `/opt/agent-detective/config/` (`local.json` at minimum). See [configuration.md](../config/configuration.md).
 
-Full options: [generated/plugin-options.md](../reference/generated/plugin-options.md), [plugins.md](../plugins/plugins.md#14-official-bundled-plugins).
+<a id="npm-cli-end-to-end"></a>
 
-Edit under `/opt/agent-detective/config/` (`default.json` and optional `local.json`). See [configuration.md](../config/configuration.md).
-
-## Native binary (end-to-end)
+## npm CLI (end-to-end)
 
 Use a **fixed install root** (this guide uses `/opt/agent-detective`):
 
-- `/opt/agent-detective/agent-detective` — executable from [GitHub Releases](https://github.com/toniop99/agent-detective/releases/latest) (asset name matches your CPU/OS, e.g. `agent-detective-linux-x64`). Download, `chmod +x`, optional signature verification: [binary.md](binary.md).
-- `/opt/agent-detective/config/default.json` (and optional `config/local.json`)
-- `/opt/agent-detective/plugins/` — optional path-based third-party plugins
+- `/opt/agent-detective/config/` — `local.json` (and optional overrides)
+- Global **`agent-detective`** on `PATH` (installed as the `agent-detective` user or system-wide)
 
-Create a dedicated user and layout (no git clone of the monorepo on the server):
+Create a dedicated user and layout:
 
-```bash title="Layout and ownership"
+```bash title="Layout and install"
 sudo useradd -r -s /usr/sbin/nologin -d /opt/agent-detective agent-detective
 sudo mkdir -p /opt/agent-detective/config
-sudo mv /path/to/downloaded/agent-detective-linux-x64 /opt/agent-detective/agent-detective
-sudo chmod 750 /opt/agent-detective
-sudo chmod 755 /opt/agent-detective/agent-detective
 sudo chown -R agent-detective:agent-detective /opt/agent-detective
+
+# Install Node 24+ on the host, then as the service user:
+sudo -u agent-detective bash -lc 'npm i -g agent-detective && cd /opt/agent-detective && agent-detective init'
 ```
 
-Place your JSON config files under `config/` as in the [configuration reference](#configuration-reference-summary) above.
-
-Smoke-check the tree **before** enabling systemd:
+Smoke-check **before** enabling systemd:
 
 ```bash title="Validate install"
-sudo -u agent-detective /opt/agent-detective/agent-detective doctor --config-root /opt/agent-detective
-sudo -u agent-detective /opt/agent-detective/agent-detective validate-config --config-root /opt/agent-detective
+sudo -u agent-detective agent-detective doctor --config-root /opt/agent-detective
+sudo -u agent-detective agent-detective validate-config --config-root /opt/agent-detective
 ```
 
 Optional: load secrets from a root-owned env file (paths on the [configuration.md](../config/configuration.md) env whitelist), for example:
@@ -129,7 +102,7 @@ Type=simple
 User=agent-detective
 Group=agent-detective
 WorkingDirectory=/opt/agent-detective
-ExecStart=/opt/agent-detective/agent-detective --config-root /opt/agent-detective
+ExecStart=/usr/bin/env agent-detective --config-root /opt/agent-detective
 Restart=always
 RestartSec=5
 Environment=NODE_ENV=production
@@ -141,7 +114,7 @@ WantedBy=multi-user.target
 
 The HTTP server listens on **all interfaces** (`0.0.0.0`) for the port you set (`port` in config or `PORT`). In production, use a **host firewall** so only **nginx** (same host) or your mesh can reach that port, while **443** is the public entry (see **Security** below).
 
-```bash title="Enable and start (native binary)"
+```bash title="Enable and start (npm CLI)"
 sudo systemctl daemon-reload
 sudo systemctl enable agent-detective
 sudo systemctl start agent-detective
@@ -184,7 +157,7 @@ server {
 Alternate path when you maintain a **git clone** on the server (fork, custom packages, or you prefer `pnpm start`).
 
 ```bash title="Clone, install, and build"
-git clone https://github.com/toniop99/agent-detective.git
+git clone https://github.com/andezdev/agent-detective.git
 cd agent-detective
 pnpm install
 pnpm run build
@@ -203,9 +176,9 @@ For development with hot reload: `pnpm run dev`. See [development.md](../develop
 
 ## Process management (systemd)
 
-### systemd with native binary
+### systemd with npm CLI
 
-The unit file, `EnvironmentFile`, and `systemctl` commands are documented in **[Native binary (end-to-end)](#native-binary-end-to-end)** above. TLS and nginx follow in **Reverse proxy (nginx)**.
+The unit file, `EnvironmentFile`, and `systemctl` commands are documented in **[npm CLI (end-to-end)](#npm-cli-end-to-end)** above. TLS and nginx follow in **Reverse proxy (nginx)**.
 
 ### systemd with from-source tree
 
@@ -267,12 +240,9 @@ curl -sS http://localhost:3001/api/health
 curl -sS http://localhost:3001/api/agent/list
 ```
 
-With the **native binary**, interactive Scalar UI at `/docs` is disabled; use **`GET /docs/openapi.json`** behind nginx or locally (see [binary.md](binary.md)).
-
 ## API docs
 
-- Interactive docs UI: `GET /docs` (from-source / `pnpm start` on built `dist/`)
-- Native binary (SEA): UI is disabled; use `GET /docs/openapi.json` (see [binary.md](binary.md))
+Interactive docs UI: **`GET /docs`** (Scalar OpenAPI reference).
 
 ## Log management
 
@@ -283,15 +253,15 @@ Structured logs go to **stdout/stderr** (captured by journald under systemd). Se
 | Symptom | What to check |
 |--------|----------------|
 | Server won't start | Valid JSON in `config/*.json`, port free: `sudo lsof -i :3001` |
-| Native binary fails immediately | Correct arch asset (`linux-x64` vs `linux-arm64` vs `darwin-arm64`), `chmod +x`, `doctor` / `validate-config` output ([binary.md](binary.md)) |
-| Plugin load failure (from source) | `node_modules/@agent-detective/*/dist/`, `pnpm run lint` |
-| Plugin load failure (native binary) | Path-based plugins under `/opt/agent-detective/plugins/`; `--config-root` so relative `package` paths resolve |
+| CLI not found in systemd | `which agent-detective` as the service user; global npm bin on `PATH` |
+| Plugin load failure (npm CLI) | `npm ls -g agent-detective`; reinstall: `npm i -g agent-detective@latest` |
+| Plugin load failure (from source) | `node_modules/@agent-detective/*/dist/`, `pnpm run build` |
 | Jira webhooks | `mockMode: false`, env `JIRA_*`, webhook URL reachable from Atlassian |
 | Agent unavailable | `which opencode` (or your agent) in the same environment as the process; `GET /api/agent/list` |
 | High memory | Lower `repoContext.gitLogMaxCommits` in local-repos options |
 
 ## See also
 
-- [installation.mdx](installation.mdx) — choose binary vs from source first
+- [installation.mdx](installation.mdx) — choose npm vs from source first
 - [configuration-hub.md](../config/configuration-hub.md) — config load order
 - [upgrading.md](upgrading.md) — releases and upgrade runbooks

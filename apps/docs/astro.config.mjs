@@ -5,7 +5,7 @@ import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
 
 // https://starlight.astro.build/reference/configuration/
-// Published at https://agent-detective.chapascript.dev/docs/ (custom domain in GitHub Settings → Pages; DNS e.g. Cloudflare CNAME → toniop99.github.io).
+// Published at https://agent-detective.chapascript.dev/docs/ (custom domain in GitHub Settings → Pages; DNS e.g. Cloudflare CNAME → andezdev.github.io).
 // Build nests output under dist/docs/ via scripts/stage-docs-dist.mjs so the site is served at /docs/ on the host.
 export default defineConfig({
   site: 'https://agent-detective.chapascript.dev',
@@ -21,7 +21,7 @@ export default defineConfig({
         // The default Starlight edit link uses the on-disk content path.
         // Because we sync docs/ → apps/docs/src/content/docs, we override the EditLink component
         // to map routes back to docs/ paths in git.
-        baseUrl: 'https://github.com/toniop99/agent-detective/edit/main/',
+        baseUrl: 'https://github.com/andezdev/agent-detective/edit/main/',
       },
       head: [
         { tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/docs/favicon-32.png' } },
@@ -40,7 +40,7 @@ export default defineConfig({
         {
           icon: 'github',
           label: 'GitHub',
-          href: 'https://github.com/toniop99/agent-detective',
+          href: 'https://github.com/andezdev/agent-detective',
         },
       ],
       sidebar: [

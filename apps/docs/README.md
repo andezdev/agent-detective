@@ -4,7 +4,7 @@ Astro + [Starlight](https://starlight.astro.build/) under **`apps/docs`**, next 
 
 - **Prerequisite:** the sync step copies and rewrites `../../docs/**` into `src/content/docs/**` (mirrors subfolders such as `operator/`, `config/`, `plugins/`, …). It skips `index.md` / `index.mdx` (the Starlight home). `prebuild` runs sync automatically. Mirrored content is [gitignored](.gitignore).
 
-- **Published URL:** **https://agent-detective.chapascript.dev/docs/** — set the same hostname in **GitHub → Settings → Pages → Custom domain**, and in **Cloudflare** (or your DNS) point that name to GitHub Pages with a **CNAME** to `toniop99.github.io` (see [GitHub’s custom domain guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)). Use **GitHub Actions** as the Pages build source.
+- **Published URL:** **https://agent-detective.chapascript.dev/docs/** — set the same hostname in **GitHub → Settings → Pages → Custom domain**, and in **Cloudflare** (or your DNS) point that name to GitHub Pages with a **CNAME** to `andezdev.github.io` (see [GitHub’s custom domain guide](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site)). Use **GitHub Actions** as the Pages build source.
 
 - **Path:** `site` + `base` in `astro.config.mjs` target that URL (`base: '/docs'`). After `astro build`, `stage-docs-dist.mjs` moves the built files into `dist/docs/`.
 

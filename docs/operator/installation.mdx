@@ -1,8 +1,8 @@
 ---
 title: "Installation and deployment paths"
-description: Choose how to run agent-detective — native binary, from source, or bare metal.
+description: Choose how to run agent-detective — npm CLI, from source, or bare metal.
 sidebar:
-  order: 1
+  order: 2
 ---
 
 import { Card, CardGrid, LinkCard, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
@@ -15,27 +15,34 @@ Choose how you run agent-detective on a host or in your cluster. This page is th
 Use the **Configuration** section in the sidebar after you pick an install path—load order and env are documented there.
 :::
 
-**Typical reading order:** this page (choose how you run) → [golden path](golden-path.md) (first webhook → analysis) → [configuration hub](../config/configuration-hub.md) (how settings load) → [upgrading](upgrading.md) (releases and upgrades).
+**Typical reading order:** [get started](get-started.md) (five-minute npm smoke) → this page (choose how you run) → [golden path](golden-path.md) (first real Jira webhook) → [configuration hub](../config/configuration-hub.md) → [upgrading](upgrading.md).
 
-**Native binary on a single Linux VM:** [binary.md](binary.md) (download, `doctor`, signatures) → [deployment.md](deployment.md) (install layout, systemd, nginx, health checks).
+**Recommended for operators:** follow [get started](get-started.md), then [deployment.md](deployment.md) for systemd and nginx on a VM.
 
 ## Choose a deployment style
 
 <Tabs syncKey="deploy">
-  <TabItem label="Native binary" icon="seti:binary">
-    **When to use:** Single executable on a host with no system Node.js or pnpm; best for bare-metal installs and simple upgrades.
+  <TabItem label="npm CLI" icon="seti:npm">
+    **When to use:** Run on a host where you already have Node.js 24+ and your agent CLI (OpenCode, Claude, Cursor) installed and authenticated.
 
-    **What you need:** Download the binary release asset from GitHub Releases, a `config/` directory, and the configured agent CLI(s) on `PATH` (use `doctor` to verify).
+    **What you need:** Node.js 24+, git, and the configured agent on `PATH`.
 
-    See [binary.md](binary.md) for install layout, `--config-root`, plugins, and systemd.
+    ```bash title="Install and scaffold"
+    npm i -g agent-detective
+    agent-detective init
+    agent-detective doctor
+    agent-detective
+    ```
+
+    Use `npx agent-detective` instead of a global install if you prefer. See [deployment.md](deployment.md) for systemd and reverse proxy.
   </TabItem>
   <TabItem label="From source" icon="seti:typescript">
-    **When to use:** You fork the repo, change `packages/`, or run without a prebuilt binary.
+    **When to use:** You fork the repo, change `packages/`, or contribute to the monorepo.
 
     **What you need:** Node.js 24+, pnpm 10+ (see root `package.json` `packageManager`), git.
 
     ```bash title="Clone and build"
-    git clone https://github.com/toniop99/agent-detective.git
+    git clone https://github.com/andezdev/agent-detective.git
     cd agent-detective
     pnpm install
     pnpm run build
@@ -43,7 +50,7 @@ Use the **Configuration** section in the sidebar after you pick an install path�
     pnpm start
     ```
 
-    Replace `toniop99/agent-detective` with your fork’s `owner/name` on GitHub if applicable.
+    Replace `andezdev/agent-detective` with your fork’s `owner/name` on GitHub if applicable.
   </TabItem>
   <TabItem label="Bare metal" icon="linux">
     **When to use:** Long-running service on a VM with nginx or similar.
@@ -55,13 +62,13 @@ Use the **Configuration** section in the sidebar after you pick an install path�
 <a id="kubernetes"></a>
 
 :::note[Kubernetes]
-This repository does not ship Helm charts. Run the app in your platform’s standard workload (container image you build, or a VM with the native binary / Node) using the same `config/` + env model as in [configuration.md](../config/configuration.md) and [deployment.md](deployment.md).
+This repository does not ship Helm charts. Run the app in your platform’s standard workload (container image you build, or a VM with Node + the npm CLI) using the same `config/` + env model as in [configuration.md](../config/configuration.md) and [deployment.md](deployment.md).
 :::
 
 ## Host capabilities
 
-- **Process:** Node.js 24+ when building from source, or a published **native binary** (no system Node).
-- **Configuration:** JSON under `config/` ([configuration.md](../config/configuration.md)); optional `config/local.json` (often gitignored) for secrets and overrides.
+- **Process:** Node.js **24+** (npm CLI or from-source build).
+- **Configuration:** JSON under `config/` ([configuration.md](../config/configuration.md)); scaffold with **`agent-detective init`** or copy `config/local.example.json` to `config/local.json`.
 - **Repositories:** the **local-repos** plugin needs **git** and filesystem access to the repos you list in config (local paths or bind mounts you configure).
 - **Network:** outbound to Jira (if you use the Jira plugin), to git remotes (for [pr-pipeline](../config/configuration.md#pr-pipeline-agent-detectivepr-pipeline)), and to your AI provider as required by the agent CLI (e.g. OpenCode). Inbound: HTTP(S) to the app (webhooks, API).
 - **Agent CLIs:** the host must be able to run the configured agent (e.g. `opencode`). See [cursor-agent.md](../development/cursor-agent.md) for the Cursor CLI, which is not installed via npm.
@@ -82,12 +89,12 @@ Use `config/local.json` (gitignored) or environment variables for secrets. Never
 ## Detailed guides
 
 <CardGrid>
-  <LinkCard title="Golden path (~15 min)" href="/docs/operator/golden-path/" description="First webhook → analysis smoke test." />
-  <LinkCard title="Native binary" href="/docs/operator/binary/" description="Single executable releases, config root, plugins, and doctor." />
+  <LinkCard title="Get started (~5 min)" href="/docs/operator/get-started/" description="npm install, init, mock webhook smoke." />
+  <LinkCard title="Golden path (~15 min)" href="/docs/operator/golden-path/" description="First real Jira webhook → analysis." />
   <LinkCard title="Bare metal deployment" href="/docs/operator/deployment/" description="systemd, nginx, health checks, and troubleshooting." />
   <LinkCard title="Configuration" href="/docs/config/configuration/" description="Config files, env whitelist, and plugin options." />
-  <LinkCard title="Upgrading" href="/docs/operator/upgrading/" description="Releases, binaries, and git upgrade." />
-  <LinkCard title="Maintainer: releasing" href="/docs/operator/releasing/" description="Tags, GitHub Actions, and native binary assets." />
+  <LinkCard title="Upgrading" href="/docs/operator/upgrading/" description="Releases and npm upgrade." />
+  <LinkCard title="Maintainer: releasing" href="/docs/operator/releasing/" description="Tags, GitHub Actions, and npm publish." />
   <LinkCard title="Jira E2E" href="/docs/e2e/readme/" description="Tunnel, webhooks, and pr-pipeline walkthroughs." />
   <LinkCard title="Development" href="/docs/development/development/" description="Day-to-day monorepo development." />
 </CardGrid>

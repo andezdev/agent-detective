@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "separate-pull-requests": false,
+  "group-pull-request-title-pattern": "chore: release ${version}",
+  "plugins": [
+    {
+      "type": "node-workspace",
+      "merge": false,
+      "updatePeerDependencies": true
+    },
+    {
+      "type": "linked-versions",
+      "groupName": "agent-detective",
+      "components": [
+        "agent-detective",
+        "types",
+        "sdk",
+        "observability",
+        "process-utils",
+        "local-repos-plugin",
+        "jira-adapter",
+        "linear-adapter",
+        "pr-pipeline"
+      ]
+    }
+  ],
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "component": "agent-detective",
+      "extra-files": ["src/version.ts"]
+    },
+    "packages/types": {
+      "release-type": "node",
+      "component": "types"
+    },
+    "packages/sdk": {
+      "release-type": "node",
+      "component": "sdk"
+    },
+    "packages/observability": {
+      "release-type": "node",
+      "component": "observability"
+    },
+    "packages/process-utils": {
+      "release-type": "node",
+      "component": "process-utils"
+    },
+    "packages/local-repos-plugin": {
+      "release-type": "node",
+      "component": "local-repos-plugin"
+    },
+    "packages/jira-adapter": {
+      "release-type": "node",
+      "component": "jira-adapter"
+    },
+    "packages/linear-adapter": {
+      "release-type": "node",
+      "component": "linear-adapter"
+    },
+    "packages/pr-pipeline": {
+      "release-type": "node",
+      "component": "pr-pipeline"
+    }
+  }
+}
