@@ -29,6 +29,7 @@ function buildCommand({
   const promptValue = resolvePromptValue(prompt, promptExpression);
   const modelToUse = model || DEFAULT_MODEL;
   const args: string[] = [
+    '--trust',
     '-p',
     promptValue,
     '--output-format',
@@ -43,6 +44,28 @@ function buildCommand({
     args.push('--resume', shellQuote(threadId));
   }
   return `${CURSOR_AGENT_CMD} ${args.join(' ')}`.trim();
+}
+
+function listModelsCommand(): string {
+  return `${CURSOR_AGENT_CMD} models < /dev/null`;
+}
+
+function parseModelList(output: string): string {
+  const lines = String(output || '').split(/\r?\n/);
+  const models: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed === 'Available models') continue;
+    const idMatch = trimmed.match(/^(\S+)\s+-\s+/);
+    if (idMatch) {
+      models.push(idMatch[1]!);
+      continue;
+    }
+    if (!/\s/.test(trimmed)) {
+      models.push(trimmed);
+    }
+  }
+  return models.join('\n');
 }
 
 function parseOutput(output: string): AgentOutput {
@@ -69,6 +92,8 @@ const cursorAgent: Agent = {
   command: CURSOR_AGENT_CMD,
   buildCommand,
   parseOutput,
+  listModelsCommand,
+  parseModelList,
   defaultModel: DEFAULT_MODEL,
   checkAvailable: () => isCommandAvailable(CURSOR_AGENT_CMD),
 };

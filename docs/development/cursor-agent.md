@@ -42,7 +42,7 @@ Or set **`AGENT=cursor`** and optional **`AGENTS_CURSOR_MODEL=...`** (see [confi
 
 ## Behavior
 
-- Non-interactive runs use print mode: `-p`, [`--output-format json`](https://cursor.com/docs/cli/reference/output-format), and `--model`.
+- Non-interactive runs use print mode: `--trust` (required headless workspace trust for the repo cwd), `-p`, [`--output-format json`](https://cursor.com/docs/cli/reference/output-format), and `--model`.
 - **`readOnly`:** when the runner passes `readOnly: true` (e.g. Jira analysis), the adapter adds **`--mode=ask`** ([modes](https://cursor.com/docs/cli/overview)).
 - **Session resume:** when `threadId` is set on the run (task context, `POST /api/core/events`, or `options.threadId` on `POST /api/core/agent/run`), the adapter adds **`--resume=<id>`** ([sessions](https://cursor.com/docs/cli/overview)).
 

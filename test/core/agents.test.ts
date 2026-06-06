@@ -221,6 +221,7 @@ describe('agents', () => {
         thinking: undefined,
       });
       assert.ok(cmd.startsWith('agent '));
+      assert.ok(cmd.includes('--trust'));
       assert.ok(cmd.includes('-p'));
       assert.ok(cmd.includes('--output-format'));
       assert.ok(cmd.includes('json'));
