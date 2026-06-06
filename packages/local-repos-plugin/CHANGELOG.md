@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.1](https://github.com/andezdev/agent-detective/compare/local-repos-plugin-v1.0.0...local-repos-plugin-v1.0.1) (2026-06-06)
+
+
+### Miscellaneous Chores
+
+* **local-repos-plugin:** Synchronize agent-detective versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/process-utils bumped to 1.0.1
+    * @agent-detective/sdk bumped to 1.0.1
+
 ## [1.0.0](https://github.com/andezdev/agent-detective/compare/local-repos-plugin-v0.1.0...local-repos-plugin-v1.0.0) (2026-06-06)
 
 
