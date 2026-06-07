@@ -1,6 +1,6 @@
 {
   "name": "@agent-detective/observability",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "description": "Observability infrastructure for agent-detective",
   "main": "./dist/index.js",

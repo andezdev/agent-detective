@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/andezdev/agent-detective/compare/observability-v1.0.1...observability-v1.1.0) (2026-06-07)
+
+
+### Miscellaneous Chores
+
+* **observability:** Synchronize agent-detective versions
+
 ## [1.0.1](https://github.com/andezdev/agent-detective/compare/observability-v1.0.0...observability-v1.0.1) (2026-06-06)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@agent-detective/local-repos-plugin",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Local repository access plugin for agent-detective",
   "type": "module",
   "main": "dist/index.js",
