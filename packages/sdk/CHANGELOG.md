@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/andezdev/agent-detective/compare/sdk-v1.1.0...sdk-v1.2.0) (2026-06-07)
+
+
+### Miscellaneous Chores
+
+* **sdk:** Synchronize agent-detective versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/types bumped to 1.2.0
+
 ## [1.1.0](https://github.com/andezdev/agent-detective/compare/sdk-v1.0.1...sdk-v1.1.0) (2026-06-07)
 
 

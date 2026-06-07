@@ -1,6 +1,6 @@
 {
   "name": "@agent-detective/linear-adapter",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Linear webhook adapter for agent-detective",
   "type": "module",
   "main": "dist/index.js",
