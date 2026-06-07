@@ -111,8 +111,8 @@ Common options:
 Usage:
   ${APP_NAME} doctor [options]
 
-Validates config load, agent CLI on PATH, and plugin packages before you run
-the server or expose webhooks.
+Validates config load, agent CLI on PATH, plugin packages, local repo
+paths, tracker credentials (when not in mock mode), and listen port.
 
 Examples:
   ${APP_NAME} doctor

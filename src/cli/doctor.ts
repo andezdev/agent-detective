@@ -5,17 +5,17 @@ import type { Plugin } from '../core/types.js';
 import { isAgentInstalled, normalizeAgent } from '../agents/index.js';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
+import {
+  buildLocalRepoChecks,
+  buildPortCheck,
+  buildTrackerCredentialChecks,
+  type DoctorCheck,
+} from './doctor-checks.js';
+import { formatDoctorReport } from './doctor-format.js';
 
 type DoctorOptions = {
   installRoot?: string;
   argv: string[];
-};
-
-type DoctorCheck = {
-  id: string;
-  ok: boolean;
-  message: string;
-  details?: Record<string, unknown>;
 };
 
 function resolveConfigDirFromInstallRoot(installRoot: string | undefined): string | undefined {
@@ -162,6 +162,10 @@ export async function runDoctor({ installRoot, argv }: DoctorOptions): Promise<v
         });
       }
     }
+
+    checks.push(...buildLocalRepoChecks(config, resolutionRoot, verbose));
+    checks.push(...buildTrackerCredentialChecks(config));
+    checks.push(await buildPortCheck(config.port ?? 3001));
   }
 
   const ok = checks.every((c) => c.ok);
@@ -171,17 +175,7 @@ export async function runDoctor({ installRoot, argv }: DoctorOptions): Promise<v
     console.log(JSON.stringify({ ok, configRootUsed, resolutionRoot, checks }, null, 2));
   } else {
     // eslint-disable-next-line no-console
-    console.log(`agent-detective doctor: ${ok ? 'OK' : 'FAILED'}`);
-    // eslint-disable-next-line no-console
-    console.log(`Using configRoot: ${configRootUsed}`);
-    for (const c of checks) {
-      // eslint-disable-next-line no-console
-      console.log(`${c.ok ? 'PASS' : 'FAIL'} ${c.id} - ${c.message}`);
-      if (verbose && c.details) {
-        // eslint-disable-next-line no-console
-        console.log(`  details: ${JSON.stringify(c.details)}`);
-      }
-    }
+    console.log(formatDoctorReport({ ok, configRootUsed, checks, verbose }));
   }
 
   process.exitCode = ok ? 0 : 1;
