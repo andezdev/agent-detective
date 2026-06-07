@@ -12,26 +12,6 @@ updates:
       - dependencies
     open-pull-requests-limit: 10
     groups:
-      catalog-toolchain:
-        patterns:
-          - typescript
-          - tsx
-          - "@types/node"
-          - eslint
-          - typescript-eslint
-          - turbo
-          - tsup
-      catalog-runtime:
-        patterns:
-          - fastify
-          - fastify-type-provider-zod
-          - "@fastify/*"
-          - "@scalar/*"
-          - openapi-types
-          - marked
-          - zod
-          - jira.js
-          - "@linear/sdk"
       astro-apps:
         patterns:
           - astro
@@ -51,6 +31,25 @@ updates:
           - pino-pretty
           - prom-client
     ignore:
+      # Catalog-managed deps: versions live in pnpm-workspace.yaml. Dependabot
+      # inlines resolved versions into pnpm-lock.yaml specifiers and breaks
+      # manifests that use "catalog:" (dependabot/dependabot-core#12244).
+      - dependency-name: typescript
+      - dependency-name: tsx
+      - dependency-name: "@types/node"
+      - dependency-name: zod
+      - dependency-name: eslint
+      - dependency-name: turbo
+      - dependency-name: typescript-eslint
+      - dependency-name: tsup
+      - dependency-name: jira.js
+      - dependency-name: "@linear/sdk"
+      - dependency-name: marked
+      - dependency-name: fastify
+      - dependency-name: fastify-type-provider-zod
+      - dependency-name: "@fastify/swagger"
+      - dependency-name: "@scalar/fastify-api-reference"
+      - dependency-name: openapi-types
       - dependency-name: "@agent-detective/*"
 
   - package-ecosystem: github-actions
