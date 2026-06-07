@@ -96,8 +96,9 @@ Next steps:
 Mock webhook smoke (server running in another terminal):
   agent-detective smoke${rootFlag}
 
+Docs: https://agent-detective.chapascript.dev/docs/operator/get-started/
+
 Fixture labels: probando, symfony — your primary repo label is "${primaryRepo}".
-Logs should show [MOCK] Added comment when mock analysis completes.
 `);
 }
 

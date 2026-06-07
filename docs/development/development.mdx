@@ -199,15 +199,12 @@ pnpm test
 ## Testing Jira Adapter (mock vs real)
 
 :::tip[Mock mode]
-When `mockMode: true`, the adapter uses `mock-jira-client.ts` and logs `[MOCK] Added comment...` instead of calling Jira.
+When `mockMode: true`, the adapter logs `[MOCK] Added comment...` instead of calling Jira.
 :::
 
-When `mockMode: false`, set `baseUrl`, `email`, and `apiToken` (or `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`) so comments are posted via Jira REST ([real-jira-client.ts](../../packages/jira-adapter/src/infrastructure/real-jira-client.ts)).
+When `mockMode: false`, set Jira credentials via config or `JIRA_*` env (see [configuration.md](../config/configuration.md)).
 
-```bash title="Jira webhook smoke test"
-# From repo root (server must be running on PORT)
-pnpm run jira:webhook-smoke
-```
+**Smoke tests:** [Agent harness — plugin / integration smoke](./agent-harness.mdx) (`pnpm run jira:webhook-smoke`, `pnpm run ci:webhook-smoke`). **npm operators:** **`agent-detective smoke`** — [get started](../operator/get-started.md).
 
 ## Debugging
 

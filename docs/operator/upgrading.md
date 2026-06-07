@@ -15,10 +15,9 @@ Use this page when you deploy with the **`agent-detective` npm CLI**, track **ma
 
 | Channel | Use for |
 |---------|---------|
-| **GitHub Releases** | Breaking or notable config and API changes in the repo |
-| **[migration.md](../development/migration.md)** | Short archive of config moves and conventions (not a full version history) |
-| **GitHub Releases** | Created when the **release-please** Release PR merges; see [.github/workflows/release-please.yml](../../.github/workflows/release-please.yml) |
-| **Watching the repository** | Notifications for releases, discussions, or commits (your choice in GitHub **Watch**) |
+| **GitHub Releases** | Version notes when the release-please Release PR merges ([workflow](../../.github/workflows/release-please.yml)) |
+| **[migration.md](../development/migration.md)** | Config moves and conventions (not a full version history) |
+| **Watching the repository** | GitHub **Watch** for releases or commits |
 
 There is no separate mailing list; subscribe via GitHub.
 
@@ -33,7 +32,7 @@ There is no separate mailing list; subscribe via GitHub.
    ```
 
 4. Restart the process (systemd, or your supervisor).
-5. Run **`agent-detective doctor`** and verify **`GET /api/health`**.
+5. Run **`agent-detective doctor`** and **`agent-detective smoke`** (server running) or **`GET /api/health`**.
 
 Keep **secrets in env** ([configuration.md](../config/configuration.md)); do not bake tokens into world-readable install trees.
 

@@ -80,10 +80,11 @@ Smoke-check **before** enabling systemd ([`doctor` checks](cli.md#doctor) — co
 
 ```bash title="Validate install"
 sudo -u agent-detective agent-detective doctor --config-root /opt/agent-detective
-sudo -u agent-detective agent-detective validate-config --config-root /opt/agent-detective
 ```
 
-`validate-config` only validates JSON/Zod; **`doctor`** is the full preflight. See [CLI reference](cli.md#validate-config).
+Optional smoke with the server running in another session: `agent-detective smoke --config-root /opt/agent-detective`.
+
+`validate-config` only checks JSON/Zod; **`doctor`** is the full preflight. See [CLI reference](cli.md#validate-config).
 
 Optional: load secrets from a root-owned env file (paths on the [configuration.md](../config/configuration.md) env whitelist), for example:
 

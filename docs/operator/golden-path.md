@@ -1,86 +1,81 @@
 ---
-title: "Golden path — first analysis in about 15 minutes"
-description: Single entry-point checklist from install to a successful Jira-triggered run (or mock), with success criteria and troubleshooting.
+title: "Golden path — first analysis"
+description: From local mock smoke to a real Jira webhook — success criteria and troubleshooting.
 sidebar:
   order: 4
 ---
 
-# Golden path — first analysis in about 15 minutes
+# Golden path — first analysis
 
-This page is the **shortest** path to prove Agent Detective end-to-end. The default flow is **Jira → webhook → local repo → comment** (same story as the root [README.md](../../README.md)). Deep detail lives in [jira-manual-e2e.md](../e2e/jira-manual-e2e.md); use that when this checklist is not enough.
+Two milestones on the way to production:
 
-## Target outcome (15-minute bar)
+| Milestone | Time | Jira account? | Guide |
+|-----------|------|---------------|--------|
+| **Local mock smoke** | ~5 min | No | [Get started](get-started.md) |
+| **Real Jira webhook** | ~15 min | Yes | This page |
 
-- Server answers **`GET /api/health`** on your chosen port.
-- **`agent-detective doctor`** (or **`validate-config`**) passes for your layout — see [CLI reference — doctor](cli.md#doctor).
-- A **Jira** (or Automation) webhook reaches your server through a **tunnel**.
-- With **`mockMode: true`** on the Jira adapter, you see **`[MOCK] Added comment`** (or equivalent) in logs after an issue **with a matching repo label** is created.
+Complete **get started** first (`agent-detective smoke` → `[MOCK] Added comment` in logs). Then wire Jira through a tunnel.
 
-If you need **real** Jira comments, add Jira API credentials and set **`mockMode: false`** — allow extra time for OAuth or token setup.
+## Target outcome (real Jira)
 
-## Prerequisites (checklist)
+- **`agent-detective doctor`** passes — see [CLI reference — doctor](cli.md#doctor).
+- Server answers **`GET /api/health`** on your port.
+- A Jira (or Automation) webhook reaches your server through **HTTPS** (tunnel or reverse proxy).
+- With **`mockMode: true`**, logs show **`[MOCK] Added comment`** after an issue with a **matching repo label**.
+- With **`mockMode: false`**, a real comment appears on the issue (allow time for API credentials).
 
-| # | Requirement | Notes |
-|---|-------------|--------|
-| 1 | **Node.js 24+** | npm CLI: `npm i -g agent-detective`. From source: **pnpm 10+** — [development.md](../development/development.md). |
-| 2 | **Git** on `PATH` | Required for repo context and agents. |
-| 3 | **Agent CLI** (e.g. OpenCode) on `PATH` | Match `config.agent` / `agent` key. [OpenCode install](https://opencode.ai/docs). |
-| 4 | **LLM credentials** for that agent | Env vars or agent config as per vendor. |
-| 5 | A **git clone** on disk | Will be registered under **local-repos** `repos[].name`. |
-| 6 | **Jira Cloud** (or compatible) | Permission to create **webhooks** or **Automation → Send web request**. |
-| 7 | **Tunnel** (ngrok, Cloudflare Tunnel, …) | Jira must reach **HTTPS** → your local port. |
+Deep detail: [jira-manual-e2e.md](../e2e/jira-manual-e2e.md).
 
-## Steps (happy path)
+## Prerequisites
 
-1. **Install and scaffold**
+| Requirement | Notes |
+|-------------|--------|
+| **Node.js 24+** | npm: `npm i -g agent-detective`. Contributors: pnpm 10+ — [development.md](../development/development.md). |
+| **git** on `PATH` | local-repos plugin reads your checkout. |
+| **Agent CLI** (OpenCode, Cursor, …) | Match `config.agent`; authenticated for real analysis. |
+| **Git clone** on disk | `repos[].name` must match a Jira **label** (case-insensitive). |
+| **Jira Cloud** | Webhooks or Automation → Send web request. |
+| **Tunnel** (ngrok, Cloudflare Tunnel, …) | Jira needs **HTTPS** to your host. |
+
+## Steps (real Jira)
+
+1. **Install and scaffold** (if not done)
 
    ```bash
    npm i -g agent-detective
    mkdir -p ~/agent-detective && cd ~/agent-detective
-   agent-detective init --repo-path /absolute/path/to/your/git/checkout --repo-name my-app
-   ```
-
-   Or from source: `git clone`, `pnpm install`, copy `config/local.example.json` → `config/local.json`.
-
-2. **Validate**
-
-   ```bash
+   agent-detective init --yes --repo-path /absolute/path/to/checkout --repo-name my-app
    agent-detective doctor --config-root .
    ```
 
-   Fix anything **error**-level before continuing.
+   Contributors from a git clone: `pnpm install`, copy `config/local.example.json` → `config/local.json`, `pnpm run dev`.
 
-3. **Run the server**
+2. **Local smoke** (optional but recommended)
+
+   ```bash
+   agent-detective --config-root .   # terminal 1
+   agent-detective smoke --config-root .   # terminal 2
+   ```
+
+3. **Run the server** (if not already)
 
    ```bash
    agent-detective --config-root .
    ```
 
-   Or `pnpm dev` / `pnpm start` when developing from a clone.
-
-4. **Tunnel**
-
-   - Expose **`http://127.0.0.1:<port>`** (default **3001**) to a public **HTTPS** URL.
+4. **Tunnel** — expose `http://127.0.0.1:<port>` (default **3001**) as public **HTTPS**.
 
 5. **Jira webhook**
 
-   - URL path (fixed): **`https://<tunnel-host>/plugins/agent-detective-jira-adapter/webhook/jira`**
-   - Subscribe at least to **Issue created** and **Comment created** (retry path).
-   - If you use **Automation** without `webhookEvent` in the body, append the right **`?webhookEvent=jira:issue_created`** query — see [jira-manual-e2e.md](../e2e/jira-manual-e2e.md#which-webhook-source-are-you-using).
+   - URL: **`https://<tunnel-host>/plugins/agent-detective-jira-adapter/webhook/jira`**
+   - Events: **Issue created**, **Comment created** (retry path).
+   - Automation without `webhookEvent` in the body: add **`?webhookEvent=jira:issue_created`** — see [jira-manual-e2e.md](../e2e/jira-manual-e2e.md#which-webhook-source-are-you-using).
 
-6. **Create a Jira issue**
+6. **Create a Jira issue** with a **label** equal to your repo `name`.
 
-   - Add a **label** equal to your repo **`name`** (case-insensitive match).
-   - Put enough description/stack trace for the agent to analyze (or a minimal placeholder for a smoke test).
+7. **Verify** — logs: webhook → queued → agent → comment (`[MOCK]` or real).
 
-7. **Verify**
-
-   - Logs: webhook accepted → task queued → agent invocation → **`[MOCK]`** comment line if mock mode.
-   - **`GET /api/health`** stays **ok** (or **degraded** only if you expect missing optional checks).
-
-   Local smoke without Jira: `pnpm run jira:webhook-smoke` (from a git clone, server running).
-
-## Reference layout (single VM)
+## Reference layout
 
 ```mermaid
 flowchart LR
@@ -99,24 +94,23 @@ flowchart LR
   AD --> A
 ```
 
-Optional **nginx** TLS termination in front of the app is described in [deployment.md](deployment.md).
+Production **nginx** TLS: [deployment.md](deployment.md).
 
-## Troubleshooting (quick)
+## Troubleshooting
 
 | Symptom | What to check |
 |---------|----------------|
-| Webhook never hits server | Tunnel URL, Jira automation rule history, firewall, correct **POST** path under `/plugins/...`. |
-| 400/404 on webhook | Path must match installed Jira plugin route; plugin loaded (`doctor`, startup logs). |
-| No analysis, silent skip | Issue **labels** must match **`repos[].name`**; see [jira-manual-e2e.md](../e2e/jira-manual-e2e.md#matching-a-ticket-to-a-repository). |
-| Agent fails immediately | `PATH`, API keys for LLM, `config.agent` id matches a registered agent. |
-| Real Jira comment fails | `mockMode: false` + Basic or OAuth fields; [env whitelist](../../src/config/env-whitelist.ts) for secrets. |
+| Webhook never hits server | Tunnel URL, Jira rule history, firewall, correct **POST** path under `/plugins/...`. |
+| 400/404 on webhook | Plugin loaded (`doctor`, startup logs); path matches Jira adapter route. |
+| No analysis | Issue **labels** match **`repos[].name`** — [matching docs](../e2e/jira-manual-e2e.md#matching-a-ticket-to-a-repository). |
+| `suppressing auto-analysis … cooldown` | Normal echo guard; wait or use explicit retry comment. |
+| Agent fails | Agent on `PATH`, LLM credentials, `config.agent` id. |
+| Real comment fails | `mockMode: false` + `JIRA_*` env — [configuration.md](../config/configuration.md). |
 
 ## Next steps
 
+- [CLI reference](cli.md) · [Deployment](deployment.md) · [Threat model](threat-model.md)
 - **Linear:** [linear-manual-e2e.md](../e2e/linear-manual-e2e.md)
 - **PR pipeline:** [jira-pr-pipeline-manual-e2e.md](../e2e/jira-pr-pipeline-manual-e2e.md)
-- **Production hardening:** [threat-model.md](threat-model.md), [deployment.md](deployment.md)
 
-## Support matrix
-
-See the table in the root [README.md](../../README.md#support-matrix) (kept next to quick start so it stays visible).
+Support matrix: root [README.md](../../README.md#support-matrix).

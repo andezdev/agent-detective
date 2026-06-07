@@ -24,9 +24,11 @@ mkdir -p ~/agent-detective && cd ~/agent-detective
 agent-detective init --repo-path /absolute/path/to/your/git/checkout --repo-name symfony
 agent-detective doctor --config-root .
 agent-detective --config-root .
+# another terminal, server running:
+agent-detective smoke --config-root .
 ```
 
-Five-minute walkthrough with a **mock Jira webhook** (no Jira account): [Get started](docs/operator/get-started.md). Full Jira + tunnel: [Golden path](docs/operator/golden-path.md). Production VM: [Deployment](docs/operator/deployment.md).
+Five-minute walkthrough: [Get started](docs/operator/get-started.md). Real Jira + tunnel: [Golden path](docs/operator/golden-path.md). Commands: [CLI reference](docs/operator/cli.md). Production VM: [Deployment](docs/operator/deployment.md).
 
 ## Develop it (pnpm)
 
@@ -68,7 +70,7 @@ Configure via `config/default.json` (and optional `config/local.json`):
 }
 ```
 
-**Operator docs:** [Get started](docs/operator/get-started.md) · [Installation paths](docs/operator/installation.mdx) · [Upgrading](docs/operator/upgrading.md) · [Threat model](docs/operator/threat-model.md)
+**Operator docs:** [Get started](docs/operator/get-started.md) · [CLI reference](docs/operator/cli.md) · [Installation paths](docs/operator/installation.mdx) · [Upgrading](docs/operator/upgrading.md) · [Threat model](docs/operator/threat-model.md)
 
 ## Support matrix
 
@@ -87,6 +89,7 @@ Configure via `config/default.json` (and optional `config/local.json`):
 - **Documentation site (Starlight):** `pnpm run docs:site` from the root builds the static site in [`apps/docs/`](apps/docs/README.md) (source markdown is [`docs/`](docs/README.md); a [sync script](scripts/sync-starlight-content.mjs) runs on build). **Published:** [https://agent-detective.chapascript.dev/docs/](https://agent-detective.chapascript.dev/docs/) (GitHub Pages + [custom domain in repo settings](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site), DNS in Cloudflare). **GitHub Actions** is the Pages source. CI: [.github/workflows/docs-site.yml](.github/workflows/docs-site.yml).
 
 - [Get started](docs/operator/get-started.md) — five-minute npm quickstart with mock webhook
+- [CLI reference](docs/operator/cli.md) — init, doctor, smoke, validate-config
 - [Installation](docs/operator/installation.mdx) — npm CLI, from source, or bare metal
 - [Configuration (overview)](docs/config/configuration-hub.md) — [full reference](docs/config/configuration.md)
 - [Upgrading](docs/operator/upgrading.md) — releases and upgrade runbook

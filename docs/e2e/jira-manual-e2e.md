@@ -7,7 +7,13 @@ sidebar:
 
 # Manual E2E: Jira webhook → local server → repo context → comment
 
-This guide walks through testing the full path locally, including how Jira Cloud reaches your machine, what to configure, and how to verify each step.
+:::tip[Npm operators]
+No Jira account yet? Start with [Get started](../operator/get-started.md) and **`agent-detective smoke`**. Return here when you need a **tunnel** and real Jira webhooks.
+:::
+
+This guide walks through the full path locally: how Jira Cloud reaches your machine, what to configure, and how to verify each step.
+
+**Contributors** run from a git clone (`pnpm run dev`). **npm operators** use **`agent-detective --config-root <dir>`** with the same config shape.
 
 ## Prerequisites (local machine)
 
@@ -310,15 +316,17 @@ flag to the agent runner, and the **opencode** adapter turns it into a stricter
 
 ## Smoke test without Jira Cloud
 
-With the server running (`pnpm dev`):
+**npm install:** with the server running, `agent-detective smoke --config-root <dir>` (see [get started](../operator/get-started.md)).
+
+**Monorepo clone:** with the server running (`pnpm run dev`):
 
 ```bash
 pnpm run jira:webhook-smoke
 ```
 
-This POSTs [issue-created.json](../../packages/jira-adapter/test/fixtures/issue-created.json) to the webhook. Expect **`{"status":"queued","taskId":...}`** and log lines for orchestration plus **`[MOCK]`** when `mockMode` is true.
+This POSTs the bundled [jira-issue-created.json](../../fixtures/jira-issue-created.json) fixture. Expect **`{"status":"queued","taskId":...}`** and **`[MOCK] Added comment`** when `mockMode` is true.
 
-Override URL:
+Override URL (monorepo script):
 
 ```bash
 JIRA_WEBHOOK_URL=https://your-tunnel.example/plugins/agent-detective-jira-adapter/webhook/jira pnpm run jira:webhook-smoke

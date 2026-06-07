@@ -30,6 +30,11 @@ export const docsBase = import.meta.env.BASE_URL.endsWith('/')
 		description="Five-minute install, init, and mock webhook smoke test."
 	/>
 	<LinkCard
+		title="CLI reference"
+		href={docsBase + 'operator/cli/'}
+		description="init, doctor, smoke, validate-config — npm operator commands."
+	/>
+	<LinkCard
 		title="Installation paths"
 		href={docsBase + 'operator/installation/'}
 		description="npm CLI, from source, or bare metal — pick how you run."
@@ -96,9 +101,9 @@ export const docsBase = import.meta.env.BASE_URL.endsWith('/')
 </Steps>
 
 <p>
-	<a href={docsBase + 'overview/'}>Full documentation index in git</a>
+	<a href={docsBase + 'overview/'}>Full documentation index</a>
 	{' · '}
-	<a href={docsBase + 'e2e/readme/'}>Jira E2E walkthroughs</a>
+	<a href={docsBase + 'operator/golden-path/'}>Golden path (real Jira)</a>
 	{' · '}
-	<a href={docsBase + 'reference/changelog/'}>CHANGELOG</a>
+	<a href="https://github.com/andezdev/agent-detective/releases">GitHub Releases</a>
 </p>

@@ -29,10 +29,10 @@ All publishable packages share one **linked version** (see `release-please-confi
 
 ## Prerequisites
 
-1. **npm account** (`andezdev` or org access to publish `agent-detective` and `@agent-detective/*`)
+1. **npm account** with publish access to `agent-detective` and `@agent-detective/*`
 2. **2FA** on npm (recommended)
-3. GitHub secret **`NPM_TOKEN`** with publish rights (used by [.github/workflows/release-please.yml](../../.github/workflows/release-please.yml))
-4. Commits on `main` follow **[Conventional Commits](https://www.conventionalcommits.org/)** (enforced locally via **husky** + **commitlint**)
+3. **npm Trusted Publishing (OIDC)** configured for this GitHub repo (see [.github/workflows/release-please.yml](../../.github/workflows/release-please.yml) — `id-token: write`, `--provenance`)
+4. Commits on `main` follow **[Conventional Commits](https://www.conventionalcommits.org/)** (husky + commitlint)
 
 ## Day-to-day workflow (maintainers)
 
@@ -90,8 +90,8 @@ Inside the monorepo, dependencies use `workspace:*`. On publish, pnpm replaces t
 
 ### Publish failed in GitHub Actions
 
-- Confirm **`NPM_TOKEN`** is set and not expired.
-- First publish of scope `@agent-detective/*` may require `access: public` (already set via `publishConfig` in each package).
+- Confirm **Trusted Publishers** on npm match this repo and workflow.
+- First publish of scope `@agent-detective/*` may require `access: public` (already set via `publishConfig`).
 - Check the workflow log for `pnpm publish` errors (missing `dist/`, auth, or duplicate version).
 
 ### Release PR did not open

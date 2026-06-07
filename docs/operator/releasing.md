@@ -40,7 +40,9 @@ agent-detective doctor
 | Item | Purpose |
 |------|---------|
 | `GITHUB_TOKEN` | Release PR + GitHub Release (default) |
-| `NPM_TOKEN` | `pnpm publish -r` in the workflow |
+| **npm Trusted Publishing (OIDC)** | `pnpm publish -r` uses GitHub OIDC (`id-token: write` in the workflow) — no long-lived `NPM_TOKEN` secret |
+
+Configure **Trusted Publishers** on npm for `agent-detective` and `@agent-detective/*` packages linked to this repository.
 
 ## Configuration
 

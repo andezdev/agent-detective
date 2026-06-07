@@ -15,7 +15,7 @@ Choose how you run agent-detective on a host or in your cluster. This page is th
 Use the **Configuration** section in the sidebar after you pick an install path—load order and env are documented there.
 :::
 
-**Typical reading order:** [get started](get-started.md) (five-minute npm smoke) → this page (choose how you run) → [golden path](golden-path.md) (first real Jira webhook) → [configuration hub](../config/configuration-hub.md) → [upgrading](upgrading.md).
+**Typical reading order:** [get started](get-started.md) → [CLI reference](cli.md) → this page → [golden path](golden-path.md) → [configuration hub](../config/configuration-hub.md).
 
 **Recommended for operators:** follow [get started](get-started.md), then [deployment.md](deployment.md) for systemd and nginx on a VM.
 
@@ -32,9 +32,10 @@ Use the **Configuration** section in the sidebar after you pick an install path�
     agent-detective init
     agent-detective doctor
     agent-detective
+    agent-detective smoke   # server running in another terminal
     ```
 
-    Use `npx agent-detective` instead of a global install if you prefer. See [CLI reference](cli.md) and [deployment.md](deployment.md) for systemd and reverse proxy.
+    Use `npx agent-detective` instead of a global install if you prefer. Commands: [CLI reference](cli.md). Production: [deployment.md](deployment.md).
   </TabItem>
   <TabItem label="From source" icon="seti:typescript">
     **When to use:** You fork the repo, change `packages/`, or contribute to the monorepo.
@@ -68,7 +69,7 @@ This repository does not ship Helm charts. Run the app in your platform’s stan
 ## Host capabilities
 
 - **Process:** Node.js **24+** (npm CLI or from-source build).
-- **Configuration:** JSON under `config/` ([configuration.md](../config/configuration.md)); scaffold with **`agent-detective init`** or copy `config/local.example.json` to `config/local.json`.
+- **Configuration:** JSON under `config/` ([configuration.md](../config/configuration.md)); scaffold with **`agent-detective init`** (copies `default.json` from the package). From source: copy `config/local.example.json` → `config/local.json`.
 - **Repositories:** the **local-repos** plugin needs **git** and filesystem access to the repos you list in config (local paths or bind mounts you configure).
 - **Network:** outbound to Jira (if you use the Jira plugin), to git remotes (for [pr-pipeline](../config/configuration.md#pr-pipeline-agent-detectivepr-pipeline)), and to your AI provider as required by the agent CLI (e.g. OpenCode). Inbound: HTTP(S) to the app (webhooks, API).
 - **Agent CLIs:** the host must be able to run the configured agent (e.g. `opencode`). See [cursor-agent.md](../development/cursor-agent.md) for the Cursor CLI, which is not installed via npm.
@@ -90,13 +91,13 @@ Use `config/local.json` (gitignored) or environment variables for secrets. Never
 
 <CardGrid>
   <LinkCard title="Get started (~5 min)" href="/docs/operator/get-started/" description="npm install, init, mock webhook smoke." />
-  <LinkCard title="Golden path (~15 min)" href="/docs/operator/golden-path/" description="First real Jira webhook → analysis." />
-  <LinkCard title="Bare metal deployment" href="/docs/operator/deployment/" description="systemd, nginx, health checks, and troubleshooting." />
-  <LinkCard title="Configuration" href="/docs/config/configuration/" description="Config files, env whitelist, and plugin options." />
+  <LinkCard title="CLI reference" href="/docs/operator/cli/" description="init, doctor, smoke, validate-config." />
+  <LinkCard title="Golden path" href="/docs/operator/golden-path/" description="Local smoke, then first real Jira webhook." />
+  <LinkCard title="Deployment" href="/docs/operator/deployment/" description="systemd, nginx, health checks." />
+  <LinkCard title="Configuration" href="/docs/config/configuration/" description="Config files, env whitelist, plugin options." />
   <LinkCard title="Upgrading" href="/docs/operator/upgrading/" description="Releases and npm upgrade." />
-  <LinkCard title="Maintainer: releasing" href="/docs/operator/releasing/" description="Tags, GitHub Actions, and npm publish." />
-  <LinkCard title="Jira E2E" href="/docs/e2e/readme/" description="Tunnel, webhooks, and pr-pipeline walkthroughs." />
-  <LinkCard title="Development" href="/docs/development/development/" description="Day-to-day monorepo development." />
+  <LinkCard title="Jira E2E (deep dive)" href="/docs/e2e/jira-manual-e2e/" description="Tunnel, webhooks, troubleshooting." />
+  <LinkCard title="Development" href="/docs/development/development/" description="Monorepo contributors." />
 </CardGrid>
 
 ## See also

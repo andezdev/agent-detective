@@ -1,23 +1,29 @@
 # Agent Detective — documentation
 
-AI-powered code analysis (Jira, webhooks, PR pipeline, local repos, and more). The root [README.md](../README.md) has a quick start; this page maps the **source tree** so you can jump to the right guide.
+AI-powered code analysis (Jira, webhooks, PR pipeline, local repos, and more). The root [README.md](../README.md) has a quick start; this page maps **`docs/`** so you can jump to the right guide.
+
+## Operators (start here)
+
+| Doc | For |
+|-----|-----|
+| [get started](operator/get-started.md) | Five-minute npm install, init, mock **`smoke`** |
+| [CLI reference](operator/cli.md) | **init**, **doctor**, **smoke**, **validate-config** |
+| [golden path](operator/golden-path.md) | Local smoke → real Jira webhook |
+| [installation](operator/installation.mdx) | npm vs from-source vs bare metal |
+| [deployment](operator/deployment.md) | systemd, nginx, health checks |
+| [configuration hub](config/configuration-hub.md) | Load order, env whitelist |
+| [upgrading](operator/upgrading.md) | npm and git upgrade runbooks |
+
+## Other areas
 
 | Area | Path | For |
 |------|------|-----|
-| **Run the server** | [operator/](operator/) | Install, deployment, upgrade, observability |
-| **Configuration** | [config/](config/) | Load order, env whitelist, long reference |
-| **Plugins** | [plugins/](plugins/) | API guide, custom plugins, development template, publishing |
-| **Contribute to the repo** | [development/](development/) | pnpm, Turbo, agents (Cursor), migration notes |
-| **Agent harness (boot, verify, logs)** | [development/agent-harness.md](development/agent-harness.md) | Runbook for humans + coding agents |
-| **Agent workflow (PR loop)** | [development/agent-workflow.md](development/agent-workflow.md) | Suggested steps before/during/after changes |
-| **Execution plans & tech debt** | `docs/exec-plans/` (create when needed) | Versioned multi-step intent; see `docs/exec-plans/README.md` in repos that maintain this tree |
-| **Short tool references** | [references/](references/) | pnpm, Turbo, ESM — low-token entry |
-| **Agent golden rules** | [development/agent-golden-rules.md](development/agent-golden-rules.md) | Do / don’t, plugins, common failures |
-| **Design** | [architecture/](architecture/) | System view, layering, [ADR](architecture/adr/) |
-| **Jira / Linear (manual E2E)** | [e2e/](e2e/) | Tunnel, webhooks, pr-pipeline walkthroughs; [Linear](e2e/linear-manual-e2e.md) |
-| **Reference (generated)** | [reference/](reference/) | Zod-generated option schemas under `reference/generated/` |
+| **Configuration (full)** | [config/](config/) | Env tables, plugin narratives |
+| **Plugins** | [plugins/](plugins/) | Authoring, extending, publishing |
+| **Contribute** | [development/](development/) | pnpm, Turbo, agent harness, golden rules |
+| **Design** | [architecture/](architecture/) | System view, [ADR](architecture/adr/) |
+| **Manual E2E** | [e2e/](e2e/) | Jira/Linear tunnel walkthroughs (after get started) |
+| **Generated reference** | [reference/generated/](reference/generated/) | Zod schemas for app + plugin options |
+| **Tool refs** | [references/](references/) | pnpm, Turbo, ESM (low-token) |
 
-## Pointers
-
-- **Operator hubs (start here):** [get started](operator/get-started.md) · [CLI reference](operator/cli.md) · [configuration hub](config/configuration-hub.md) · [installation](operator/installation.mdx) · [golden path](operator/golden-path.md) · [threat model](operator/threat-model.md) · [upgrading](operator/upgrading.md)
-- **Published doc site (Starlight):** built from this folder; see [apps/docs/README.md](../apps/docs/README.md) and `pnpm run docs:site` at the repo root
+**Published site:** `pnpm run docs:site` → [apps/docs/README.md](../apps/docs/README.md). Source syncs to Starlight on build; home page **`apps/docs/src/content/docs/index.mdx`** is hand-edited.
