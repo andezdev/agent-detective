@@ -1,21 +1,65 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
     commit-message:
-      prefix: "chore"
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
+    open-pull-requests-limit: 10
     groups:
-      dependencies:
+      catalog-toolchain:
         patterns:
-          - "*"
+          - typescript
+          - tsx
+          - "@types/node"
+          - eslint
+          - typescript-eslint
+          - turbo
+          - tsup
+      catalog-runtime:
+        patterns:
+          - fastify
+          - fastify-type-provider-zod
+          - "@fastify/*"
+          - "@scalar/*"
+          - openapi-types
+          - marked
+          - zod
+          - jira.js
+          - "@linear/sdk"
+      astro-apps:
+        patterns:
+          - astro
+          - "@astrojs/*"
+          - astro-mermaid
+          - mermaid
+          - sharp
+          - "@tailwindcss/*"
+          - tailwindcss
+      dev-tools:
+        patterns:
+          - "@commitlint/*"
+          - husky
+          - "@eslint/*"
+          - tmp
+          - pino
+          - pino-pretty
+          - prom-client
+    ignore:
+      - dependency-name: "@agent-detective/*"
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
     commit-message:
-      prefix: "chore"
+      prefix: chore
+    labels:
+      - dependencies
+      - github-actions
