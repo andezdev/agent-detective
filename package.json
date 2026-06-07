@@ -40,7 +40,8 @@
     "clean": "turbo run clean",
     "prepare": "node scripts/publish-lifecycle.mjs",
     "start": "node dist/index.js",
-    "jira:webhook-smoke": "node scripts/jira-webhook-smoke.mjs"
+    "jira:webhook-smoke": "node scripts/jira-webhook-smoke.mjs",
+    "ci:webhook-smoke": "node scripts/ci-webhook-smoke.mjs"
   },
   "keywords": [
     "ai",

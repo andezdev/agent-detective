@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import type { Agent } from '../../src/core/types.js';
-import { createAgentRunner } from '../../src/core/agent-runner.js';
+import { createAgentRunner, MOCK_AGENT_RESULT_TEXT } from '../../src/core/agent-runner.js';
 
 describe('agent-runner', () => {
   const createMockAgent = (overrides: Partial<Agent> = {}): Agent => ({
@@ -69,6 +69,32 @@ describe('agent-runner', () => {
       await runner.runAgentForChat('task-1', 'test prompt');
       const result = await runner.stopActiveRun('task-1');
       assert.equal(result.status, 'idle');
+    });
+
+    it('skips shell when AGENT_DETECTIVE_MOCK_AGENT is set', async () => {
+      const prev = process.env.AGENT_DETECTIVE_MOCK_AGENT;
+      process.env.AGENT_DETECTIVE_MOCK_AGENT = '1';
+      try {
+        const execLocal = async () => {
+          throw new Error('execLocal should not run when mock agent is enabled');
+        };
+        const runner = createAgentRunner({
+          execLocal,
+          execLocalStreaming: execLocal,
+          terminateChildProcess: () => {},
+        });
+        runner.registerAgent(createMockAgent({ id: 'opencode' }));
+
+        const result = await runner.runAgentForChat('task-1', 'test prompt', { cwd: '/tmp' });
+        assert.equal(result.text, MOCK_AGENT_RESULT_TEXT);
+        assert.equal(result.sawJson, false);
+      } finally {
+        if (prev === undefined) {
+          delete process.env.AGENT_DETECTIVE_MOCK_AGENT;
+        } else {
+          process.env.AGENT_DETECTIVE_MOCK_AGENT = prev;
+        }
+      }
     });
 
     it('handles execLocal returning empty string', async () => {

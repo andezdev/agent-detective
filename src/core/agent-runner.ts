@@ -4,6 +4,14 @@ import type { RunAgentOptions, Agent, AgentOutput, ChildProcess, AgentInfo, Logg
 const DEFAULT_TIMEOUT_MS = 120000;
 const DEFAULT_MAX_BUFFER = 10 * 1024 * 1024;
 
+/** CI / integration smoke: skip real agent subprocess when set to 1, true, or yes. */
+export const MOCK_AGENT_RESULT_TEXT = 'Mock agent analysis (AGENT_DETECTIVE_MOCK_AGENT).';
+
+export function isMockAgentEnvEnabled(): boolean {
+  const raw = process.env.AGENT_DETECTIVE_MOCK_AGENT?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
 interface CreateAgentRunnerOptions {
   agentTimeoutMs?: number;
   agentMaxBuffer?: number;
@@ -241,6 +249,15 @@ function createAgentRunner(options: CreateAgentRunnerOptions) {
       inputFiles?: string[];
     }
   ): Promise<AgentOutput> {
+    if (isMockAgentEnvEnabled()) {
+      emitFinal(MOCK_AGENT_RESULT_TEXT);
+      return {
+        text: MOCK_AGENT_RESULT_TEXT,
+        sawJson: false,
+        threadId: threadId && String(threadId).trim() ? String(threadId).trim() : undefined,
+      };
+    }
+
     const effectiveTimeoutMs =
       typeof shellTimeoutMs === 'number' && shellTimeoutMs > 0 ? shellTimeoutMs : agentTimeoutMs;
     const promptBase64 = Buffer.from(prompt, 'utf8').toString('base64');

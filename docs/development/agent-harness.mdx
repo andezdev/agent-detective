@@ -64,7 +64,10 @@ Default config: **`config/default.json`**; overrides: **`config/local.json`** (d
 ## Plugin / integration smoke
 
 - **Jira webhook smoke** (server must be listening on `PORT`): `pnpm run jira:webhook-smoke`
+- **CI webhook E2E** (temp config, mock agent, mock Jira — no real OpenCode/Cursor): `pnpm run ci:webhook-smoke` (also runs in the **`build`** CI job after `build:app`)
 - **Manual Jira E2E** (tunnel, labels): [e2e/jira-manual-e2e.md](../e2e/jira-manual-e2e.md)
+
+Set **`AGENT_DETECTIVE_MOCK_AGENT=1`** (or `true` / `yes`) to skip the real agent subprocess; the runner returns a fixed mock analysis string. Used by `scripts/ci-webhook-smoke.mjs` so CI can POST a Jira fixture and assert **`[MOCK] Added comment`** in logs without installing OpenCode or Cursor.
 
 ## Logs and observability
 
