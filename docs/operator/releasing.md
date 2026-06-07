@@ -2,7 +2,7 @@
 title: "Maintainer: releasing"
 description: How release-please creates GitHub Releases and publishes the npm CLI.
 sidebar:
-  order: 8
+  order: 9
 ---
 
 # Maintainer: releasing

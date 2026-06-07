@@ -2,7 +2,7 @@
 title: "Golden path — first analysis in about 15 minutes"
 description: Single entry-point checklist from install to a successful Jira-triggered run (or mock), with success criteria and troubleshooting.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 # Golden path — first analysis in about 15 minutes
@@ -12,7 +12,7 @@ This page is the **shortest** path to prove Agent Detective end-to-end. The defa
 ## Target outcome (15-minute bar)
 
 - Server answers **`GET /api/health`** on your chosen port.
-- **`agent-detective doctor`** (or **`validate-config`**) passes for your layout.
+- **`agent-detective doctor`** (or **`validate-config`**) passes for your layout — see [CLI reference — doctor](cli.md#doctor).
 - A **Jira** (or Automation) webhook reaches your server through a **tunnel**.
 - With **`mockMode: true`** on the Jira adapter, you see **`[MOCK] Added comment`** (or equivalent) in logs after an issue **with a matching repo label** is created.
 

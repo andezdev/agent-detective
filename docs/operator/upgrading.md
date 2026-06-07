@@ -2,7 +2,7 @@
 title: "Staying up to date"
 description: Upgrade runbooks for the npm CLI, git clones, and published npm packages.
 sidebar:
-  order: 6
+  order: 7
 ---
 
 # Staying up to date

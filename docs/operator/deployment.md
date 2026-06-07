@@ -2,7 +2,7 @@
 title: "Deployment guide"
 description: Single-server bare-metal deployment with systemd, reverse proxy, and sizing.
 sidebar:
-  order: 4
+  order: 5
 ---
 
 # Deployment guide
@@ -76,12 +76,14 @@ sudo chown -R agent-detective:agent-detective /opt/agent-detective
 sudo -u agent-detective bash -lc 'npm i -g agent-detective && cd /opt/agent-detective && agent-detective init'
 ```
 
-Smoke-check **before** enabling systemd:
+Smoke-check **before** enabling systemd ([`doctor` checks](cli.md#doctor) — config, agent, plugins, repos, port):
 
 ```bash title="Validate install"
 sudo -u agent-detective agent-detective doctor --config-root /opt/agent-detective
 sudo -u agent-detective agent-detective validate-config --config-root /opt/agent-detective
 ```
+
+`validate-config` only validates JSON/Zod; **`doctor`** is the full preflight. See [CLI reference](cli.md#validate-config).
 
 Optional: load secrets from a root-owned env file (paths on the [configuration.md](../config/configuration.md) env whitelist), for example:
 

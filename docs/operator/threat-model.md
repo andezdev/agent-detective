@@ -2,7 +2,7 @@
 title: "Threat model and operator security"
 description: Abuse cases for webhooks, ticket content, and agent execution — with mitigations and owner actions.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 # Threat model and operator security

@@ -2,7 +2,7 @@
 title: "Observability Package"
 description: Structured logging, metrics, tracing, and health checks for agent-detective.
 sidebar:
-  order: 7
+  order: 8
 ---
 
 # Observability Package

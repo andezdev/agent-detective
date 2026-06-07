@@ -70,6 +70,14 @@ agent-detective doctor --config-root .
 agent-detective --config-root .
 ```
 
+**Doctor** runs preflight checks (config, agent CLI, plugins, repo paths, listen port). See [CLI reference — doctor](cli.md#doctor) for the full checklist and `--verbose` / `--json`.
+
+| Flag | Purpose |
+|------|---------|
+| `--config-root` | Install directory (same as server) |
+| `--verbose` | Extra paths and plugin details |
+| `--json` | Machine-readable report |
+
 Leave the server running. Default port is **3001**. Open **http://127.0.0.1:3001/docs** for the API reference (Scalar).
 
 ## 3. Mock webhook smoke (no Jira Cloud)
@@ -97,6 +105,8 @@ pnpm run jira:webhook-smoke
 
 **Success:** server logs show the webhook accepted, a task queued, and **`[MOCK] Added comment`** when mock analysis finishes. **`GET /api/health`** should stay **ok**.
 
+More on **`smoke`** and other commands: [CLI reference](cli.md).
+
 ## 4. What you have now
 
 - A working server with **OpenAPI docs** at `/docs`
@@ -107,6 +117,7 @@ pnpm run jira:webhook-smoke
 
 | Goal | Where to go |
 |------|-------------|
+| CLI commands (doctor, smoke, flags) | [CLI reference](cli.md) |
 | Real Jira + tunnel | [Golden path](golden-path.md) · [Jira E2E](../e2e/jira-manual-e2e.md) |
 | Production VM (systemd, nginx) | [Deployment](deployment.md) |
 | Env, secrets, plugins | [Configuration hub](../config/configuration-hub.md) |
