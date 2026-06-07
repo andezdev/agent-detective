@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.0](https://github.com/andezdev/agent-detective/compare/agent-detective-v1.0.1...agent-detective-v1.1.0) (2026-06-07)
+
+
+### Features
+
+* **cli:** add interactive init wizard with review loop ([fa187ca](https://github.com/andezdev/agent-detective/commit/fa187ca3b4edc016935443a87e0f13382021e139))
+
+
+### Bug Fixes
+
+* **agents:** pass --trust for headless Cursor CLI runs ([4a65655](https://github.com/andezdev/agent-detective/commit/4a65655dd1d4f1231a6d2790fd5210570437376b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/jira-adapter bumped to 1.1.0
+    * @agent-detective/linear-adapter bumped to 1.1.0
+    * @agent-detective/local-repos-plugin bumped to 1.1.0
+    * @agent-detective/observability bumped to 1.1.0
+    * @agent-detective/pr-pipeline bumped to 1.1.0
+    * @agent-detective/process-utils bumped to 1.1.0
+    * @agent-detective/sdk bumped to 1.1.0
+    * @agent-detective/types bumped to 1.1.0
+
 ## [1.0.1](https://github.com/andezdev/agent-detective/compare/agent-detective-v1.0.0...agent-detective-v1.0.1) (2026-06-06)
 
 
