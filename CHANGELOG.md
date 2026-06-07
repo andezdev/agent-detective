@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2.0](https://github.com/andezdev/agent-detective/compare/agent-detective-v1.1.0...agent-detective-v1.2.0) (2026-06-07)
+
+
+### Features
+
+* **ci:** add webhook E2E smoke with mock agent and Jira ([79a58c5](https://github.com/andezdev/agent-detective/commit/79a58c57975f6aaa90468b7bb0dbad44f9ede8fc))
+* **cli:** add smoke command and operator-friendly help ([90f001a](https://github.com/andezdev/agent-detective/commit/90f001a0e8e5d503809fcf87db49c671c3f1fc6e))
+* **cli:** extend doctor with repo, port, and tracker checks ([41421af](https://github.com/andezdev/agent-detective/commit/41421afc00bd3d6d9bf134dc297b21a92cb912ff))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/jira-adapter bumped to 1.2.0
+    * @agent-detective/linear-adapter bumped to 1.2.0
+    * @agent-detective/local-repos-plugin bumped to 1.2.0
+    * @agent-detective/observability bumped to 1.2.0
+    * @agent-detective/pr-pipeline bumped to 1.2.0
+    * @agent-detective/process-utils bumped to 1.2.0
+    * @agent-detective/sdk bumped to 1.2.0
+    * @agent-detective/types bumped to 1.2.0
+
 ## [1.1.0](https://github.com/andezdev/agent-detective/compare/agent-detective-v1.0.1...agent-detective-v1.1.0) (2026-06-07)
 
 

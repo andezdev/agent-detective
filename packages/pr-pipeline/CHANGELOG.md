@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/andezdev/agent-detective/compare/pr-pipeline-v1.1.0...pr-pipeline-v1.2.0) (2026-06-07)
+
+
+### Miscellaneous Chores
+
+* **pr-pipeline:** Synchronize agent-detective versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/process-utils bumped to 1.2.0
+    * @agent-detective/sdk bumped to 1.2.0
+
 ## [1.1.0](https://github.com/andezdev/agent-detective/compare/pr-pipeline-v1.0.1...pr-pipeline-v1.1.0) (2026-06-07)
 
 

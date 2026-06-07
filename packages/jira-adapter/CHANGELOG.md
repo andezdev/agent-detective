@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/andezdev/agent-detective/compare/jira-adapter-v1.1.0...jira-adapter-v1.2.0) (2026-06-07)
+
+
+### Miscellaneous Chores
+
+* **jira-adapter:** Synchronize agent-detective versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @agent-detective/sdk bumped to 1.2.0
+
 ## [1.1.0](https://github.com/andezdev/agent-detective/compare/jira-adapter-v1.0.1...jira-adapter-v1.1.0) (2026-06-07)
 
 
