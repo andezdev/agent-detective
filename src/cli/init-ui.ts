@@ -84,11 +84,6 @@ export function printNextSteps(installRoot: string, options: InitOptions): void 
         ? 'Mock Jira mode — safe to hit without posting to Jira.'
         : 'Real Jira mode — set JIRA_EMAIL and JIRA_API_TOKEN (or OAuth vars) via env before starting.';
 
-  const webhookPath =
-    options.issueTracker === 'linear'
-      ? '/plugins/agent-detective-linear-adapter/webhook/linear'
-      : '/plugins/agent-detective-jira-adapter/webhook/jira';
-
   // eslint-disable-next-line no-console
   console.log(`
 Created config/local.json.
@@ -99,10 +94,9 @@ Next steps:
   2. agent-detective${rootFlag}
 
 Mock webhook smoke (server running in another terminal):
-  From a git clone: pnpm run jira:webhook-smoke
-  Or POST to http://127.0.0.1:${options.port}${webhookPath}
-  Bundled fixture labels: probando, symfony — your primary repo label is "${primaryRepo}".
+  agent-detective smoke${rootFlag}
 
+Fixture labels: probando, symfony — your primary repo label is "${primaryRepo}".
 Logs should show [MOCK] Added comment when mock analysis completes.
 `);
 }

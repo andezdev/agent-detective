@@ -10,18 +10,21 @@ import { getAgentLabel, listAgents, normalizeAgent } from './agents/index.js';
 import { createObservability } from '@agent-detective/observability';
 import { applyLogLevelAliasForObservability } from './config/env-whitelist.js';
 import { isAbsolute, resolve } from 'node:path';
-import { APP_NAME, APP_VERSION } from './version.js';
+import { APP_VERSION } from './version.js';
 import { homedir } from 'node:os';
+import { printHelp, resolveHelpTopic, type HelpTopic } from './cli/help.js';
 
 type CliArgs = {
-  command: 'serve' | 'doctor' | 'validate-config' | 'init' | 'help' | 'version';
+  command: 'serve' | 'doctor' | 'validate-config' | 'init' | 'smoke' | 'help' | 'version';
   configRoot?: string;
+  helpTopic?: HelpTopic;
 };
 
 function resolveCliArgs(argv: string[]): CliArgs {
   const args = argv.slice(2);
-  if (args.includes('--help') || args.includes('-h') || args[0] === 'help') {
-    return { command: 'help' };
+  const helpTopic = resolveHelpTopic(argv);
+  if (helpTopic !== undefined) {
+    return { command: 'help', helpTopic };
   }
   if (args.includes('--version') || args[0] === 'version') {
     return { command: 'version' };
@@ -32,9 +35,11 @@ function resolveCliArgs(argv: string[]): CliArgs {
       ? 'doctor'
       : args[0] === 'init'
         ? 'init'
-        : args[0] === 'validate-config' || args.includes('--validate-config')
-          ? 'validate-config'
-          : 'serve';
+        : args[0] === 'smoke'
+          ? 'smoke'
+          : args[0] === 'validate-config' || args.includes('--validate-config')
+            ? 'validate-config'
+            : 'serve';
 
   let configRoot: string | undefined;
   for (let i = 0; i < args.length; i++) {
@@ -48,34 +53,6 @@ function resolveCliArgs(argv: string[]): CliArgs {
   }
 
   return { command, configRoot };
-}
-
-function printHelp(): void {
-  // eslint-disable-next-line no-console
-  console.log(`${APP_NAME} ${APP_VERSION}
-
-Usage:
-  ${APP_NAME} [--config-root <dir>]              Start server (default)
-  ${APP_NAME} doctor [--config-root <dir>] [--json] [--verbose]
-                                              Validate config/tools/plugins and exit
-  ${APP_NAME} validate-config [--config-root <dir>] [--json] [--verbose]
-                                              Validate config only and exit
-  ${APP_NAME} init [--config-root <dir>] [--yes|-y] [--json] [--force]
-                   [--repo-path <dir>] [--repo-name <name>] [--repo <name:path>]
-                   [--port <n>] [--agent <id>] [--default-model <model>]
-                   [--tracker jira|linear|mock-only] [--jira-mock|--no-jira-mock]
-                   [--jira-base-url <url>] [--linear-mock|--no-linear-mock]
-                   [--ack-message <text>] [--fail-on-missing-repos]
-                   [--pr-pipeline|--no-pr-pipeline] [--pr-dry-run|--no-pr-dry-run]
-                   [--pretty-logs]
-                                              Scaffold config/local.json (guided wizard in a TTY)
-  ${APP_NAME} --version                         Print version and exit
-  ${APP_NAME} --help                            Print this help and exit
-
-Config:
-  --config-root <dir>     Directory containing config/ (or the config/ dir itself)
-  AGENT_DETECTIVE_CONFIG_ROOT can be used instead of --config-root
-`);
 }
 
 function resolveInstallRoot(cliConfigRoot: string | undefined): string | undefined {
@@ -245,7 +222,7 @@ async function main(): Promise<void> {
   const installRoot = resolveInstallRoot(cli.configRoot);
 
   if (cli.command === 'help') {
-    printHelp();
+    printHelp(cli.helpTopic ?? 'main');
     return;
   }
 
@@ -270,6 +247,12 @@ async function main(): Promise<void> {
   if (cli.command === 'init') {
     const mod = await import('./cli/init.js');
     await mod.runInit({ installRoot, argv: process.argv });
+    return;
+  }
+
+  if (cli.command === 'smoke') {
+    const mod = await import('./cli/smoke.js');
+    await mod.runSmoke({ installRoot, argv: process.argv });
     return;
   }
 

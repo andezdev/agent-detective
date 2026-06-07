@@ -11,6 +11,7 @@
   "files": [
     "dist",
     "config/default.json",
+    "fixtures/jira-issue-created.json",
     "scripts/publish-lifecycle.mjs"
   ],
   "publishConfig": {

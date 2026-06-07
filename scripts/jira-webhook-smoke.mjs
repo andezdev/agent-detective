@@ -13,7 +13,7 @@ const root = resolve(__dirname, '..');
 const url =
   process.env.JIRA_WEBHOOK_URL ||
   'http://127.0.0.1:3001/plugins/agent-detective-jira-adapter/webhook/jira';
-const fixture = resolve(root, 'packages/jira-adapter/test/fixtures/issue-created.json');
+const fixture = resolve(root, 'fixtures/jira-issue-created.json');
 const body = readFileSync(fixture, 'utf8');
 
 const res = await fetch(url, {

@@ -17,7 +17,7 @@ Run Agent Detective on your host in about **five minutes**. This path uses the *
 |-------------|-----|
 | **Node.js 24+** | Runs the `agent-detective` CLI and server |
 | **git** on `PATH` | **local-repos** plugin reads your checkout |
-| **Agent CLI** on `PATH` (e.g. [OpenCode](https://opencode.ai/docs)) | Matches `config.agent`; must be authenticated for real analysis |
+| **Agent CLI** on `PATH` (e.g. [OpenCode](https://opencode.ai/docs), [Cursor](https://cursor.com/docs/cli/overview)) | Matches `config.agent`; must be authenticated for real analysis. Cursor runs headless with workspace trust handled by the host. |
 | A **git clone** on disk | Registered in `config/local.json` under `repos[].path` |
 
 :::note[No Docker]
@@ -74,23 +74,28 @@ Leave the server running. Default port is **3001**. Open **http://127.0.0.1:3001
 
 ## 3. Mock webhook smoke (no Jira Cloud)
 
-With the server running, POST the bundled **issue created** fixture. You do **not** need a git clone if you pipe the fixture from GitHub:
+With the server running, POST the bundled **issue created** fixture:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/andezdev/agent-detective/main/packages/jira-adapter/test/fixtures/issue-created.json \
-  | curl -sS -X POST http://127.0.0.1:3001/plugins/agent-detective-jira-adapter/webhook/jira \
-    -H 'Content-Type: application/json' -d @-
+agent-detective smoke --config-root .
 ```
 
-From a **monorepo clone**, the same fixture is one command:
+The CLI ships the same fixture as the monorepo (`fixtures/jira-issue-created.json`). Labels **`probando`** and **`symfony`** must match a repo name in your config (re-run `init` with `--repo-name symfony` if needed).
+
+| Flag | Purpose |
+|------|---------|
+| `--config-root` | Read `port` from config (default webhook host `127.0.0.1:3001`) |
+| `--url` | Full webhook URL override (or `JIRA_WEBHOOK_URL` env) |
+| `--host` | Host override when building URL from config port |
+| `--json` | Machine-readable result |
+
+From a **monorepo clone**, the same check is:
 
 ```bash
 pnpm run jira:webhook-smoke
 ```
 
 **Success:** server logs show the webhook accepted, a task queued, and **`[MOCK] Added comment`** when mock analysis finishes. **`GET /api/health`** should stay **ok**.
-
-If the repo label does not match, re-run `init` with `--repo-name symfony` (fixture labels) or add your `--repo-name` as a label in a real Jira issue later.
 
 ## 4. What you have now
 
