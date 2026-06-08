@@ -1,6 +1,6 @@
 ---
 title: "CLI reference"
-description: npm CLI commands — init, doctor, smoke, validate-config, and server startup.
+description: npm CLI commands — init, doctor, smoke, triage, validate-config, and server startup.
 sidebar:
   order: 2
 ---
@@ -9,7 +9,7 @@ sidebar:
 
 The **`agent-detective`** npm package is the operator entry point. Install globally (`npm i -g agent-detective`) or run with `npx`.
 
-**Typical flow:** [init](#init) → [doctor](#doctor) → start server → [smoke](#smoke) (mock webhook).
+**Typical flow:** [init](#init) → [doctor](#doctor) → start server → [smoke](#smoke) (mock webhook). Or skip the server: [triage](#triage) a Jira ticket directly from the CLI.
 
 For terminal help at any time:
 
@@ -147,6 +147,98 @@ Fixture labels: **`probando`**, **`symfony`** — must match a `repos[].name` in
 From a monorepo clone: `pnpm run jira:webhook-smoke` (same fixture under `fixtures/`).
 
 Details: [get started — mock webhook smoke](get-started.md#3-mock-webhook-smoke-no-jira-cloud).
+
+---
+
+## triage
+
+**Triage a Jira ticket or free-text incident from the CLI.** Runs the analysis agent and outputs the result. Does **not** require the server to be running.
+
+Two modes:
+
+```bash
+# Jira mode — fetch issue, match repos by labels
+agent-detective triage PROJ-123 --config-root ~/agent-detective
+
+# Text mode — paste the description directly, pick the repo
+agent-detective triage --text "JSON corruption on save" --repo av-symf
+echo "JSON corruption on save" | agent-detective triage --repo av-symf
+```
+
+### Flags
+
+| Flag | Default | Purpose |
+|------|---------|---------|
+| `<key-or-url>` | — | Jira issue key or URL *(Jira mode)* |
+| `--text <description>` | — | Free-text incident description *(text mode — skips Jira)* |
+| `--repo <name>` | — | Explicit repo selection. **Required** in text mode; optional override in Jira mode |
+| `--output <mode>` | `stdout` | `stdout`, `file`, or `jira` (`jira` not available in text mode) |
+| `--output-path <dir>` | `./reports/` | Directory for `file` output |
+| `--prompt <text>` | config `analysisPrompt` | Override the analysis prompt for this run |
+| `--verbose` | off | Stream raw agent output to stderr in real time |
+| `--json` | off | Machine-readable JSON output |
+| `--config-root <dir>` | cwd | Install directory |
+
+Stdin is also supported: when no `<key>` and no `--text` are given but stdin is piped, the input is read as the incident text. `--repo` is required in this case.
+
+### Output modes
+
+| Mode | Behavior |
+|------|----------|
+| **stdout** *(default)* | Prints the analysis markdown to stdout. Multi-repo: each prefixed with `## Analysis for \`repoName\`` |
+| **file** | Writes one `.md` file per repo to `--output-path`. Filename: `{KEY}-{repo}-{timestamp}.md`. Prints file paths to stdout |
+| **jira** | Posts the analysis as a Jira comment on the original ticket *(Jira mode only)* |
+
+### How it works
+
+**Jira mode:**
+
+1. Loads config and Jira credentials from `config/local.json`
+2. Fetches the issue via the Jira REST API (including comments if `fetchIssueComments: true`)
+3. Matches repos by comparing issue labels against configured `repos[].name` (or uses `--repo` override)
+4. Builds the analysis prompt using the default template (or `--prompt` / config `analysisPrompt`)
+5. Runs the agent in **read-only mode** directly in each matched repo (no worktree)
+6. Outputs results per the selected `--output` mode
+
+**Text mode:**
+
+1. Takes the description from `--text` or stdin
+2. Resolves the repo from `--repo` against configured `repos[].name`
+3. Steps 4–6 are the same as Jira mode (no Jira credentials required)
+
+### Examples
+
+```bash
+# Jira mode — basic
+agent-detective triage PROJ-123
+
+# Jira mode — save to file
+agent-detective triage PROJ-123 --output file --output-path ./reports/
+
+# Jira mode — post back to Jira
+agent-detective triage PROJ-123 --output jira
+
+# Jira mode — override repo (skip label matching)
+agent-detective triage PROJ-123 --repo av-symf
+
+# Text mode — inline description
+agent-detective triage --text "JSON corruption on save in VrboHometogo" --repo av-symf
+
+# Text mode — pipe from stdin
+echo "JSON corruption on save" | agent-detective triage --repo av-symf --verbose
+
+# Custom analysis focus
+agent-detective triage PROJ-123 --prompt "Focus only on security implications"
+
+# Machine-readable for scripts
+agent-detective triage PROJ-123 --json
+```
+
+**JSON output** (with `--json`): `{ ok, issueKey, results: [{ repo, text, usage?, error? }] }`.
+
+**Verbose mode** streams raw agent output to **stderr**, keeping stdout clean for piping (`| pbcopy`, `> report.md`).
+
+**Timeout:** The agent runner uses `agents.runner.timeoutMs` from config (default: 120s). For large repos, increase it in `config/local.json`.
 
 ---
 

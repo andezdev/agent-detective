@@ -154,25 +154,30 @@ Options:
 Success: HTTP 200 and {"status":"queued",...}; server logs show agent run
 and [MOCK] Added comment when analysis completes.`;
     case 'triage':
-      return `${APP_NAME} triage — triage a Jira ticket from the CLI
+      return `${APP_NAME} triage — triage a Jira ticket or free text from the CLI
 
 Usage:
-  ${APP_NAME} triage <PROJ-123 | URL> [options]
+  ${APP_NAME} triage <PROJ-123 | URL> [options]       Jira mode
+  ${APP_NAME} triage --text "description" --repo NAME  Text mode
+  echo "description" | ${APP_NAME} triage --repo NAME  Stdin mode
 
-Fetches a Jira issue, matches repos by labels, runs the analysis agent,
-and outputs the result. Does not require the server to be running.
+Jira mode fetches the issue, matches repos by labels, runs the analysis
+agent. Text mode skips Jira entirely — paste the incident description
+directly. Does not require the server to be running.
 
 Examples:
   ${APP_NAME} triage PROJ-123
   ${APP_NAME} triage https://mysite.atlassian.net/browse/PROJ-123
   ${APP_NAME} triage PROJ-123 --output file --output-path ./reports/
   ${APP_NAME} triage PROJ-123 --output jira
-  ${APP_NAME} triage PROJ-123 --prompt "Focus on security implications"
-  ${APP_NAME} triage PROJ-123 --verbose
-  ${APP_NAME} triage PROJ-123 --json
+  ${APP_NAME} triage --text "JSON corruption on save" --repo av-symf
+  echo "JSON corruption" | ${APP_NAME} triage --repo av-symf --verbose
+  ${APP_NAME} triage PROJ-123 --repo av-symf   (override label matching)
 
 Options:
-  --output <mode>        stdout (default), file, or jira
+  --text <description>   Free-text incident (skips Jira fetch)
+  --repo <name>          Explicit repo (required in text mode, optional override in Jira mode)
+  --output <mode>        stdout (default), file, or jira (jira not available in text mode)
   --output-path <dir>    Directory for file output (default: ./reports/)
   --prompt <text>        Override the analysisPrompt from config
   --verbose              Stream raw agent output to stderr

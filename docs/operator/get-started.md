@@ -84,6 +84,7 @@ Monorepo contributors (server already on `PORT`): `pnpm run jira:webhook-smoke`.
 | Goal | Document |
 |------|----------|
 | CLI commands and flags | [CLI reference](cli.md) |
+| Triage a ticket without the server | [CLI reference — triage](cli.md#triage) |
 | Real Jira + tunnel | [Golden path](golden-path.md) · [Jira E2E](../e2e/jira-manual-e2e.md) |
 | Production VM | [Deployment](deployment.md) |
 | Secrets and plugins | [Configuration hub](../config/configuration-hub.md) |
