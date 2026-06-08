@@ -37,6 +37,9 @@ import { localReposPluginOptionsSchema } from './application/options-schema.js';
 import { zodToPluginSchema } from '@agent-detective/sdk';
 
 export { localReposPluginOptionsSchema } from './application/options-schema.js';
+export { matchAllReposByLabels } from './domain/repo-matcher.js';
+export { buildRepoContext, formatRepoContextForPrompt } from './infrastructure/repo-context/index.js';
+export { getDefaultAnalysisPrompt, formatTemplate } from './domain/types.js';
 
 const localReposPluginSchema = zodToPluginSchema(localReposPluginOptionsSchema);
 

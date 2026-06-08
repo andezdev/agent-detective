@@ -15,6 +15,11 @@ import {
 } from './application/structured-comment-metadata.js';
 
 export { DEFAULT_WEBHOOK_BEHAVIOR, jiraAdapterOptionsSchema } from './application/options-schema.js';
+export { createRealJiraClient } from './infrastructure/real-jira-client.js';
+export { createMockJiraClient } from './infrastructure/mock-jira-client.js';
+export { stampComment, isOwnComment, hasTriggerPhrase } from './domain/comment-trigger.js';
+export type { JiraClient, JiraCommentRecord, JiraIssueRecord, JiraAttachmentRecord } from './infrastructure/jira-client.js';
+export type { JiraAdapterConfig } from './domain/types.js';
 
 const PLUGIN_NAME = '@agent-detective/jira-adapter';
 const PLUGIN_VERSION = '0.1.0';

@@ -15,7 +15,7 @@ import { homedir } from 'node:os';
 import { printHelp, resolveHelpTopic, type HelpTopic } from './cli/help.js';
 
 type CliArgs = {
-  command: 'serve' | 'doctor' | 'validate-config' | 'init' | 'smoke' | 'help' | 'version';
+  command: 'serve' | 'doctor' | 'validate-config' | 'init' | 'smoke' | 'triage' | 'help' | 'version';
   configRoot?: string;
   helpTopic?: HelpTopic;
 };
@@ -37,9 +37,11 @@ function resolveCliArgs(argv: string[]): CliArgs {
         ? 'init'
         : args[0] === 'smoke'
           ? 'smoke'
-          : args[0] === 'validate-config' || args.includes('--validate-config')
-            ? 'validate-config'
-            : 'serve';
+          : args[0] === 'triage'
+            ? 'triage'
+            : args[0] === 'validate-config' || args.includes('--validate-config')
+              ? 'validate-config'
+              : 'serve';
 
   let configRoot: string | undefined;
   for (let i = 0; i < args.length; i++) {
@@ -253,6 +255,12 @@ async function main(): Promise<void> {
   if (cli.command === 'smoke') {
     const mod = await import('./cli/smoke.js');
     await mod.runSmoke({ installRoot, argv: process.argv });
+    return;
+  }
+
+  if (cli.command === 'triage') {
+    const mod = await import('./cli/triage.js');
+    await mod.runTriage({ installRoot, argv: process.argv });
     return;
   }
 

@@ -1,6 +1,6 @@
 import { APP_NAME, APP_VERSION } from '../version.js';
 
-export type HelpTopic = 'main' | 'serve' | 'init' | 'doctor' | 'smoke' | 'validate-config';
+export type HelpTopic = 'main' | 'serve' | 'init' | 'doctor' | 'smoke' | 'triage' | 'validate-config';
 
 const DOCS_URL = 'https://agent-detective.chapascript.dev/docs/';
 
@@ -17,6 +17,7 @@ export function resolveHelpTopic(argv: string[]): HelpTopic | undefined {
     case 'init':
     case 'doctor':
     case 'smoke':
+    case 'triage':
     case 'validate-config':
     case 'serve':
     case 'start':
@@ -42,6 +43,7 @@ Commands
   ${APP_NAME} init [options]               Create config/local.json (+ default.json)
   ${APP_NAME} doctor [options]             Preflight: config, agent, plugins
   ${APP_NAME} smoke [options]              Mock webhook smoke (server must be running)
+  ${APP_NAME} triage <key|url> [options]  Triage a Jira ticket from the CLI
   ${APP_NAME} validate-config [options]    Validate config files only
   ${APP_NAME} help [command]               Show help for a command
   ${APP_NAME} --version                    Print version
@@ -51,7 +53,7 @@ Global options
   -h, --help             Show help (use: ${APP_NAME} help <command>)
   AGENT_DETECTIVE_CONFIG_ROOT   Same as --config-root
 
-Details: ${APP_NAME} help init | doctor | smoke | validate-config
+Details: ${APP_NAME} help init | doctor | smoke | triage | validate-config
 Docs:    ${DOCS_URL}`;
 }
 
@@ -151,6 +153,32 @@ Options:
 
 Success: HTTP 200 and {"status":"queued",...}; server logs show agent run
 and [MOCK] Added comment when analysis completes.`;
+    case 'triage':
+      return `${APP_NAME} triage — triage a Jira ticket from the CLI
+
+Usage:
+  ${APP_NAME} triage <PROJ-123 | URL> [options]
+
+Fetches a Jira issue, matches repos by labels, runs the analysis agent,
+and outputs the result. Does not require the server to be running.
+
+Examples:
+  ${APP_NAME} triage PROJ-123
+  ${APP_NAME} triage https://mysite.atlassian.net/browse/PROJ-123
+  ${APP_NAME} triage PROJ-123 --output file --output-path ./reports/
+  ${APP_NAME} triage PROJ-123 --output jira
+  ${APP_NAME} triage PROJ-123 --prompt "Focus on security implications"
+  ${APP_NAME} triage PROJ-123 --verbose
+  ${APP_NAME} triage PROJ-123 --json
+
+Options:
+  --output <mode>        stdout (default), file, or jira
+  --output-path <dir>    Directory for file output (default: ./reports/)
+  --prompt <text>        Override the analysisPrompt from config
+  --verbose              Stream raw agent output to stderr
+  --json                 Machine-readable JSON output
+  --config-root <dir>    Install directory
+  -h, --help             Show this help`;
     case 'validate-config':
       return `${APP_NAME} validate-config — config files only
 
